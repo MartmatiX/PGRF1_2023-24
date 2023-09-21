@@ -29,8 +29,8 @@ public class Canvas {
     private final JPanel panel;
     private final BufferedImage img;
 
-    int cross_x = 400;
-    int cross_y = 300;
+    private int cross_x;
+    private int cross_y;
 
     private final int[] colors = {0xff0000, 0x00ff00, 0x0000ff};
     Random random = new Random();
@@ -44,6 +44,9 @@ public class Canvas {
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+
+        cross_x = img.getWidth() / 2;
+        cross_y = img.getHeight() / 2;
 
         panel = new JPanel() {
             @Serial
