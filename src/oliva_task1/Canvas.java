@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -24,12 +25,9 @@ import javax.swing.WindowConstants;
 
 public class Canvas {
 
-    private JFrame frame;
-    private JPanel panel;
-    private BufferedImage img;
-
-    int x = 400;
-    int y = 300;
+    private final JFrame frame;
+    private final JPanel panel;
+    private final BufferedImage img;
 
     int cross_x = 400;
     int cross_y = 300;
@@ -48,6 +46,7 @@ public class Canvas {
         img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
         panel = new JPanel() {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -68,72 +67,14 @@ public class Canvas {
             public void keyPressed(KeyEvent e) {
                 super.keyPressed(e);
                 switch (e.getKeyCode()) {
-                    case KeyEvent.VK_UP -> {
-                        y -= 1;
-                        img.setRGB(x, y, 0xffff00);
-                        panel.repaint();
-                    }
-                    case KeyEvent.VK_DOWN -> {
-                        y += 1;
-                        img.setRGB(x, y, 0xffff00);
-                        panel.repaint();
-                    }
-                    case KeyEvent.VK_LEFT -> {
-                        x -= 1;
-                        img.setRGB(x, y, 0xffff00);
-                        panel.repaint();
-                    }
-                    case KeyEvent.VK_RIGHT -> {
-                        x += 1;
-                        img.setRGB(x, y, 0xffff00);
-                        panel.repaint();
-                    }
-                    case KeyEvent.VK_W -> {
-                        cross_y -= 1;
-                        clear();
-                        img.setRGB(cross_x, cross_y, 0xffff00);
-                        img.setRGB(cross_x + 1, cross_y, 0xffff00);
-                        img.setRGB(cross_x - 1, cross_y, 0xffff00);
-                        img.setRGB(cross_x, cross_y + 1, 0xffff00);
-                        img.setRGB(cross_x, cross_y - 1, 0xffff00);
-                        panel.repaint();
-                    }
-                    case KeyEvent.VK_S -> {
-                        cross_y += 1;
-                        clear();
-                        img.setRGB(cross_x, cross_y, 0xffff00);
-                        img.setRGB(cross_x + 1, cross_y, 0xffff00);
-                        img.setRGB(cross_x - 1, cross_y, 0xffff00);
-                        img.setRGB(cross_x, cross_y + 1, 0xffff00);
-                        img.setRGB(cross_x, cross_y - 1, 0xffff00);
-                        panel.repaint();
-                    }
-                    case KeyEvent.VK_D -> {
-                        cross_x += 1;
-                        clear();
-                        img.setRGB(cross_x, cross_y, 0xffff00);
-                        img.setRGB(cross_x + 1, cross_y, 0xffff00);
-                        img.setRGB(cross_x - 1, cross_y, 0xffff00);
-                        img.setRGB(cross_x, cross_y + 1, 0xffff00);
-                        img.setRGB(cross_x, cross_y - 1, 0xffff00);
-                        panel.repaint();
-                    }
-                    case KeyEvent.VK_A -> {
-                        cross_x -= 1;
-                        clear();
-                        img.setRGB(cross_x, cross_y, 0xffff00);
-                        img.setRGB(cross_x + 1, cross_y, 0xffff00);
-                        img.setRGB(cross_x - 1, cross_y, 0xffff00);
-                        img.setRGB(cross_x, cross_y + 1, 0xffff00);
-                        img.setRGB(cross_x, cross_y - 1, 0xffff00);
-                        panel.repaint();
-                    }
+                    case KeyEvent.VK_W -> cross_y -= 1;
+                    case KeyEvent.VK_S -> cross_y += 1;
+                    case KeyEvent.VK_D -> cross_x += 1;
+                    case KeyEvent.VK_A -> cross_x -= 1;
                 }
-                Point.trail.add(new Point(cross_x, cross_y, colors[random.nextInt(3)]));
-                for (Point point : Point.trail) {
-                    img.setRGB(point.x, point.y, point.color);
-                    panel.repaint();
-                }
+                clear();
+                drawCross();
+                drawTrail();
             }
         });
         panel.addMouseListener(new MouseAdapter() {
@@ -150,10 +91,25 @@ public class Canvas {
                 super.mouseDragged(e);
                 img.setRGB(e.getX(), e.getY(), 0x00ff00);
                 panel.repaint();
-
             }
         });
         panel.requestFocus();
+    }
+
+    private void drawCross() {
+        img.setRGB(cross_x, cross_y, 0xffff00);
+        img.setRGB(cross_x + 1, cross_y, 0xffff00);
+        img.setRGB(cross_x - 1, cross_y, 0xffff00);
+        img.setRGB(cross_x, cross_y + 1, 0xffff00);
+        img.setRGB(cross_x, cross_y - 1, 0xffff00);
+    }
+
+    private void drawTrail() {
+        Point.trail.add(new Point(cross_x, cross_y, colors[random.nextInt(3)]));
+        for (Point point : Point.trail) {
+            img.setRGB(point.x, point.y, point.color);
+            panel.repaint();
+        }
     }
 
     public void clear() {
