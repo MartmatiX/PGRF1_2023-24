@@ -6,6 +6,9 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -19,8 +22,6 @@ import javax.swing.WindowConstants;
  * @version 2020
  */
 
-// TODO: 21.09.2023 zacit s krizkem u prostred, posouvat ho na vsechny strany a nechavat za sebou trail aby bylo videt kudy se slo. Trasu vest od prostredku krizku
-
 public class Canvas {
 
     private JFrame frame;
@@ -30,8 +31,11 @@ public class Canvas {
     int x = 400;
     int y = 300;
 
-    int cross_x = 200;
-    int cross_y = 200;
+    int cross_x = 400;
+    int cross_y = 300;
+
+    private final int[] colors = {0xff0000, 0x00ff00, 0x0000ff};
+    Random random = new Random();
 
     public Canvas(int width, int height) {
         frame = new JFrame();
@@ -125,6 +129,11 @@ public class Canvas {
                         panel.repaint();
                     }
                 }
+                Point.trail.add(new Point(cross_x, cross_y, colors[random.nextInt(3)]));
+                for (Point point : Point.trail) {
+                    img.setRGB(point.x, point.y, point.color);
+                    panel.repaint();
+                }
             }
         });
         panel.addMouseListener(new MouseAdapter() {
@@ -169,6 +178,22 @@ public class Canvas {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new Canvas(800, 600).start());
+    }
+
+    private static class Point {
+
+        private final int x;
+        private final int y;
+        private final int color;
+
+        protected static List<Point> trail = new ArrayList<>();
+
+        public Point(int x, int y, int color) {
+            this.x = x;
+            this.y = y;
+            this.color = color;
+        }
+
     }
 
 }
