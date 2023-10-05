@@ -1,33 +1,21 @@
-package oliva_task1;
+package cz.uhk.fim;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
+import cz.uhk.fim.constants.Constants;
+import cz.uhk.fim.rasterdata.RasterBi;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import javax.swing.WindowConstants;
-
-/**
- * trida pro kresleni na platno: zobrazeni pixelu
- *
- * @author PGRF FIM UHK
- * @version 2020
- */
-
 public class Canvas {
 
     private final JFrame frame;
     private final JPanel panel;
-    private final BufferedImage img;
+    private final RasterBi img;
 
     private int cross_x;
     private int cross_y;
@@ -43,7 +31,7 @@ public class Canvas {
         frame.setResizable(false);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        img = new RasterBi(width, height);
 
         cross_x = img.getWidth() / 2;
         cross_y = img.getHeight() / 2;
@@ -55,7 +43,7 @@ public class Canvas {
             @Override
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                present(g);
+                img.present(g);
             }
         };
 
@@ -76,7 +64,7 @@ public class Canvas {
                         case KeyEvent.VK_D -> cross_x += 1;
                         case KeyEvent.VK_A -> cross_x -= 1;
                     }
-                    clear();
+                    img.clear(Constants.DEFAULT_BACKGROUND_COLOR);
                     drawCross();
                     drawTrail();
                 } catch (Exception ex) {
@@ -88,7 +76,7 @@ public class Canvas {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                img.setRGB(e.getX(), e.getY(), 0xff0000);
+                img.setColor(e.getX(), e.getY(), 0xff0000);
                 panel.repaint();
             }
         });
@@ -96,7 +84,7 @@ public class Canvas {
             @Override
             public void mouseDragged(MouseEvent e) {
                 super.mouseDragged(e);
-                img.setRGB(e.getX(), e.getY(), 0x00ff00);
+                img.setColor(e.getX(), e.getY(), 0x00ff00);
                 panel.repaint();
             }
         });
@@ -104,34 +92,24 @@ public class Canvas {
     }
 
     private void drawCross() {
-        img.setRGB(cross_x, cross_y, 0xffff00);
-        img.setRGB(cross_x + 1, cross_y, 0xffff00);
-        img.setRGB(cross_x - 1, cross_y, 0xffff00);
-        img.setRGB(cross_x, cross_y + 1, 0xffff00);
-        img.setRGB(cross_x, cross_y - 1, 0xffff00);
+        img.setColor(cross_x, cross_y, 0xffff00);
+        img.setColor(cross_x + 1, cross_y, 0xffff00);
+        img.setColor(cross_x - 1, cross_y, 0xffff00);
+        img.setColor(cross_x, cross_y + 1, 0xffff00);
+        img.setColor(cross_x, cross_y - 1, 0xffff00);
     }
 
     private void drawTrail() {
         Point.trail.add(new Point(cross_x, cross_y, colors[random.nextInt(3)]));
         for (Point point : Point.trail) {
-            img.setRGB(point.x, point.y, point.color);
+            img.setColor(point.x, point.y, point.color);
             panel.repaint();
         }
     }
 
-    public void clear() {
-        Graphics gr = img.getGraphics();
-        gr.setColor(new Color(0x2f2f2f));
-        gr.fillRect(0, 0, img.getWidth(), img.getHeight());
-    }
-
-    public void present(Graphics graphics) {
-        graphics.drawImage(img, 0, 0, null);
-    }
-
     public void draw() {
-        clear();
-        img.setRGB(400, 300, 0xffff00);
+        img.clear(Constants.DEFAULT_BACKGROUND_COLOR);
+        img.setColor(400, 300, 0xffff00);
     }
 
     public void start() {
