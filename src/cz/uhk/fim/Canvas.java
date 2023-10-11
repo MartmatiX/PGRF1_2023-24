@@ -1,7 +1,7 @@
 package cz.uhk.fim;
 
 import cz.uhk.fim.constants.Constants;
-import cz.uhk.fim.rasterdata.RasterBi;
+import cz.uhk.fim.rasterdata.RasterBufferedImage;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,7 +15,7 @@ public class Canvas {
 
     private final JFrame frame;
     private final JPanel panel;
-    private final RasterBi img;
+    private final RasterBufferedImage img;
 
     private int cross_x;
     private int cross_y;
@@ -31,7 +31,7 @@ public class Canvas {
         frame.setResizable(false);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        img = new RasterBi(width, height);
+        img = new RasterBufferedImage(width, height);
 
         cross_x = img.getWidth() / 2;
         cross_y = img.getHeight() / 2;

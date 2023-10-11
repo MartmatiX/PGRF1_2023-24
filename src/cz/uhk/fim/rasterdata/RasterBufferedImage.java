@@ -4,11 +4,11 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Optional;
 
-public class RasterBi implements Raster, Presentable{
+public class RasterBufferedImage implements Raster, Presentable{
 
     private final BufferedImage img;
 
-    public RasterBi(int width, int height) {
+    public RasterBufferedImage(int width, int height) {
         this.img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
     }
 
