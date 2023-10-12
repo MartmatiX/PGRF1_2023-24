@@ -5,13 +5,15 @@ import cz.uhk.fim.raster_data.Raster;
 
 /**
  * This class represents a dashed line that uses Naive Line algorithm to draw a line with added spacing between pixels to create feeling of dashed line being drawn
+ * The lines are being drawn until certain set limit is reached, in default 5, 5. Meaning the dash will be drawn for 5 pixels then there will be 5 pixel delay.
+ * i.e. - represents dash, * represents space -> with limit 5, 5 -> -----*****-----*****-----*****
  */
 public class DashedLineDrawer implements Liner {
 
     @Override
     public void drawLine(Raster img, double x1, double y1, double x2, double y2, int color) {
-        int space = 0;
-        int length = 0;
+        int space = 0; // Track space between the lines
+        int length = 0; // Track length of the lines
 
         double k;
 
@@ -31,7 +33,7 @@ public class DashedLineDrawer implements Liner {
             }
 
             for (int x = (int) Math.round(x1); x < x2; x++) {
-                if (space > Globals.spaceLength) {
+                if (space > Globals.spaceLength) { // If the space length exceeds the set size reset counters
                     length = 0;
                     space = 0;
                 }
@@ -51,7 +53,7 @@ public class DashedLineDrawer implements Liner {
             }
 
             for (int y = (int) y1; y <= y2; y++) {
-                if (space > Globals.spaceLength) {
+                if (space > Globals.spaceLength) { // If the space length exceeds the set size reset counters
                     length = 0;
                     space = 0;
                 }
