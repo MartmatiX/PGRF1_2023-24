@@ -1,35 +1,34 @@
 package cz.uhk.fim;
 
-import cz.uhk.fim.constants.Constants;
+import cz.uhk.fim.constants.Globals;
 import cz.uhk.fim.raster_data.RasterBufferedImage;
+import cz.uhk.fim.raster_op.DashedLineDrawer;
+import cz.uhk.fim.raster_op.Liner;
 import cz.uhk.fim.raster_op.NaiveLineDrawer;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.Serial;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 public class Canvas {
 
-    private final JFrame frame;
     private final JPanel panel;
     private final RasterBufferedImage img;
 
-    private int cross_x;
-    private int cross_y;
+    private Liner liner;
+    private int lineX;
+    private int lineY;
+    private int lineColor;
 
-    private final int[] colors = {0xff0000, 0x00ff00, 0x0000ff};
-    Random random = new Random();
+    private int flag;
 
-    NaiveLineDrawer naiveLineDrawer = new NaiveLineDrawer();
-    int naiveX;
-    int naiveY;
+    private final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
 
     public Canvas(int width, int height) {
-        frame = new JFrame();
+        JFrame frame = new JFrame();
 
         frame.setLayout(new BorderLayout());
         frame.setTitle("UHK FIM PGRF : " + this.getClass().getName());
@@ -37,9 +36,6 @@ public class Canvas {
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         img = new RasterBufferedImage(width, height);
-
-        cross_x = img.getWidth() / 2;
-        cross_y = img.getHeight() / 2;
 
         panel = new JPanel() {
             @Serial
@@ -62,19 +58,48 @@ public class Canvas {
             @Override
             public void keyPressed(KeyEvent e) {
                 super.keyPressed(e);
-                try {
-                    switch (e.getKeyCode()) {
-                        case KeyEvent.VK_W -> cross_y -= 1;
-                        case KeyEvent.VK_S -> cross_y += 1;
-                        case KeyEvent.VK_D -> cross_x += 1;
-                        case KeyEvent.VK_A -> cross_x -= 1;
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_ESCAPE -> {
+                        System.out.println("Exiting application");
+                        System.exit(0);
                     }
-                    img.clear(Constants.DEFAULT_BACKGROUND_COLOR);
-                    drawCross();
-                    drawTrail();
-                } catch (Exception ex) {
-                    System.out.println("You are out of bounds!");
+                    case KeyEvent.VK_1 -> {
+                        System.out.println("Changed mode to Naive Line drawer");
+                        liner = new NaiveLineDrawer();
+                        lineColor = 0xff00ff;
+                        flag = 1;
+                    }
+                    case KeyEvent.VK_2 -> {
+                        System.out.println("Changed mode to Dashed Line drawer");
+                        liner = new DashedLineDrawer();
+                        lineColor = 0x00ffff;
+                        flag = 2;
+                    }
+                    case KeyEvent.VK_C -> {
+                        System.out.println("Clearing image...");
+                        img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
+                        flag = 0;
+                        Globals.setDefaultDashAndSpace();
+                        panel.repaint();
+                        System.out.println("Done");
+                    }
                 }
+
+                if (flag == 2 && e.getKeyCode() == KeyEvent.VK_S) {
+                    try {
+                        System.out.println("Enter new length for space between pixels:");
+                        Globals.spaceLength = Integer.parseInt(bufferedReader.readLine());
+                        System.out.println("Enter new length for length of each dash:");
+                        Globals.dashLength = Integer.parseInt(bufferedReader.readLine());
+                        System.out.println("Dash size changed to [" + Globals.dashLength + "] and space between lines changed to [" + Globals.spaceLength + "]");
+                    } catch (Exception exception) {
+                        Globals.setDefaultDashAndSpace();
+                        System.out.println("Exception occurred. Setting values back to default!");
+                        System.out.println("Stack trace [" + exception + "]");
+                    }
+                }
+                panel.repaint();
+                img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
             }
         });
 
@@ -82,44 +107,40 @@ public class Canvas {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                naiveX = e.getX();
-                naiveY = e.getY();
-                img.setColor(naiveX, naiveY, 0xff00ff);
-                panel.repaint();
-                System.out.println("Selected new starting point [" + naiveX + ";" + naiveY + "]");
+                switch (flag) {
+                    case 1, 2 -> {
+                        lineX = e.getX();
+                        lineY = e.getY();
+                        prepareLineStart(lineX, lineY, lineColor);
+                    }
+                }
             }
         });
+
         panel.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
                 super.mouseDragged(e);
-                img.clear(Constants.DEFAULT_BACKGROUND_COLOR);
-                naiveLineDrawer.drawLine(img, naiveX, naiveY, e.getX(), e.getY(), 0x00ff00);
-                panel.repaint();
+                switch (flag) {
+                    case 1, 2 -> {
+                        img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
+                        liner.drawLine(img, lineX, lineY, e.getX(), e.getY(), lineColor);
+                        panel.repaint();
+                    }
+                }
             }
         });
         panel.requestFocus();
     }
 
-    private void drawCross() {
-        img.setColor(cross_x, cross_y, 0xffff00);
-        img.setColor(cross_x + 1, cross_y, 0xffff00);
-        img.setColor(cross_x - 1, cross_y, 0xffff00);
-        img.setColor(cross_x, cross_y + 1, 0xffff00);
-        img.setColor(cross_x, cross_y - 1, 0xffff00);
-    }
-
-    private void drawTrail() {
-        Point.trail.add(new Point(cross_x, cross_y, colors[random.nextInt(3)]));
-        for (Point point : Point.trail) {
-            img.setColor(point.x, point.y, point.color);
-            panel.repaint();
-        }
+    private void prepareLineStart(int x, int y, int color) {
+        img.setColor(x, y, color);
+        panel.repaint();
+        System.out.println("Selected new starting point [" + lineX + ";" + lineY + "]");
     }
 
     public void draw() {
-        img.clear(Constants.DEFAULT_BACKGROUND_COLOR);
-        img.setColor(400, 300, 0xffff00);
+        img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
     }
 
     public void start() {
@@ -128,23 +149,7 @@ public class Canvas {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new Canvas(800, 600).start());
-    }
-
-    private static class Point {
-
-        private final int x;
-        private final int y;
-        private final int color;
-
-        protected static List<Point> trail = new ArrayList<>();
-
-        public Point(int x, int y, int color) {
-            this.x = x;
-            this.y = y;
-            this.color = color;
-        }
-
+        SwingUtilities.invokeLater(() -> new Canvas(1280, 720).start());
     }
 
 }

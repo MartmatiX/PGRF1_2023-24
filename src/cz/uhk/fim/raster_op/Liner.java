@@ -23,10 +23,10 @@ public interface Liner {
     void drawLine(Raster img, double x1, double y1, double x2, double y2, int color);
 
     default void drawLine(Raster img, Point p1, Point p2, int color) {
-        // TODO: 12.10.2023 Finish this method
+        drawLine(img, p1.getX(), p1.getY(), p2.getX(), p2.getY(), color);
     }
 
     default void drawLine(Raster img, Line line, int color) {
-        // TODO: 12.10.2023 Finish this method
+        drawLine(img, line.getP1().getX(), line.getP1().getY(), line.getP2().getX(), line.getP2().getY(), color);
     }
 }
