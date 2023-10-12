@@ -1,7 +1,8 @@
 package cz.uhk.fim;
 
 import cz.uhk.fim.constants.Constants;
-import cz.uhk.fim.rasterdata.RasterBufferedImage;
+import cz.uhk.fim.raster_data.RasterBufferedImage;
+import cz.uhk.fim.raster_op.NaiveLineDrawer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,6 +23,10 @@ public class Canvas {
 
     private final int[] colors = {0xff0000, 0x00ff00, 0x0000ff};
     Random random = new Random();
+
+    NaiveLineDrawer naiveLineDrawer = new NaiveLineDrawer();
+    int naiveX;
+    int naiveY;
 
     public Canvas(int width, int height) {
         frame = new JFrame();
@@ -57,7 +62,7 @@ public class Canvas {
             @Override
             public void keyPressed(KeyEvent e) {
                 super.keyPressed(e);
-                try{
+                try {
                     switch (e.getKeyCode()) {
                         case KeyEvent.VK_W -> cross_y -= 1;
                         case KeyEvent.VK_S -> cross_y += 1;
@@ -72,19 +77,24 @@ public class Canvas {
                 }
             }
         });
+
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                img.setColor(e.getX(), e.getY(), 0xff0000);
+                naiveX = e.getX();
+                naiveY = e.getY();
+                img.setColor(naiveX, naiveY, 0xff00ff);
                 panel.repaint();
+                System.out.println("Selected new starting point [" + naiveX + ";" + naiveY + "]");
             }
         });
         panel.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
                 super.mouseDragged(e);
-                img.setColor(e.getX(), e.getY(), 0x00ff00);
+                img.clear(Constants.DEFAULT_BACKGROUND_COLOR);
+                naiveLineDrawer.drawLine(img, naiveX, naiveY, e.getX(), e.getY(), 0x00ff00);
                 panel.repaint();
             }
         });

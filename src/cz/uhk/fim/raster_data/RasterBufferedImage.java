@@ -1,10 +1,10 @@
-package cz.uhk.fim.rasterdata;
+package cz.uhk.fim.raster_data;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Optional;
 
-public class RasterBufferedImage implements Raster, Presentable{
+public class RasterBufferedImage implements Raster, Presentable {
 
     private final BufferedImage img;
 

@@ -1,4 +1,4 @@
-package cz.uhk.fim.rasterdata;
+package cz.uhk.fim.raster_data;
 
 import java.awt.*;
 import java.util.Optional;
@@ -16,15 +16,15 @@ public interface Raster {
     int getHeight();
 
     /**
-     *  Sets the color of the pixel
-     * @param x - x coordinate in the canvas
-     * @param y - y coordinate in the canvas
+     * Sets the color of the pixel
+     *
+     * @param x     - x coordinate in the canvas
+     * @param y     - y coordinate in the canvas
      * @param color - color to which the pixel should be set to
      */
     void setColor(int x, int y, int color);
 
     /**
-     *
      * @param x - x coordinate in the canvas
      * @param y - y coordinate in the canvas
      * @return Optional of Integer from which can be extracted the color of the pixel, or null
@@ -33,12 +33,12 @@ public interface Raster {
 
     /**
      * Clears the canvas to the color of background
+     *
      * @param background - color to which all pixels should be set to after clearing
      */
     void clear(int background);
 
     /**
-     *
      * @return graphics of the image
      */
     Graphics getGraphics();
