@@ -54,6 +54,24 @@ public class Canvas {
                 img.present(g);
             }
         };
+        panel.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 15));
+
+        JTextArea textArea = new JTextArea();
+        textArea.setForeground(new Color(255, 255, 255));
+        textArea.setBackground(Color.BLACK);
+        String text = """
+                Welcome to the Application!
+                Please select mode:
+                            
+                1 - Naive line drawer
+                2 - Dashed line drawer
+                    'S' key to change the spacing and length of each dash.
+                    Follow instruction in the terminal.
+                3 - Polygon drawer
+                    Before using, please, select mode in the terminal.
+                """;
+        textArea.setText(text);
+        panel.add(textArea, BorderLayout.WEST);
 
         panel.setPreferredSize(new Dimension(width, height));
 
@@ -117,11 +135,11 @@ public class Canvas {
                     }
                 }
 
-                if (flag == 2 || flag == 3 && polygonMode.equals("2") && e.getKeyCode() == KeyEvent.VK_S) {
+                if (flag == 2 && e.getKeyCode() == KeyEvent.VK_S) {
                     try {
-                        System.out.println("Enter new length for space between pixels:");
+                        System.out.println("Enter new value for space between pixels:");
                         Globals.spaceLength = Integer.parseInt(bufferedReader.readLine());
-                        System.out.println("Enter new length for length of each dash:");
+                        System.out.println("Enter new value for length of each dash:");
                         Globals.dashLength = Integer.parseInt(bufferedReader.readLine());
                         System.out.println("Dash size changed to [" + Globals.dashLength + "] and space between lines changed to [" + Globals.spaceLength + "]");
                     } catch (Exception exception) {
