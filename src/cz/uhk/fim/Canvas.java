@@ -158,9 +158,29 @@ public class Canvas {
                 super.mouseClicked(e);
                 switch (flag) {
                     case 1, 2 -> {
-                        lineX = e.getX();
-                        lineY = e.getY();
-                        prepareLineStart(lineX, lineY, lineColor);
+                        if (e.getButton() == MouseEvent.BUTTON1) {
+                            lineX = e.getX();
+                            lineY = e.getY();
+                            prepareLineStart(lineX, lineY, lineColor);
+                        }
+                    }
+                    case 3 -> {
+                        if (e.getButton() == MouseEvent.BUTTON3) {
+                            Point closest = null;
+                            double closestDistance = Double.MAX_VALUE;
+
+                            for (Point point : polygon.getPoints()) {
+                                double distance = Math.sqrt(Math.pow(point.getX() - e.getX(), 2) + Math.pow(point.getY() - e.getY(), 2));
+                                if (distance < closestDistance) {
+                                    closestDistance = distance;
+                                    closest = point;
+                                }
+                            }
+                            polygon.getPoints().remove(closest);
+                            img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
+                            polygonDrawer.drawPolygon(img, liner, polygon, Globals.BLUE);
+                            panel.repaint();
+                        }
                     }
                 }
             }
@@ -168,7 +188,7 @@ public class Canvas {
             @Override
             public void mouseReleased(MouseEvent e) {
                 super.mouseReleased(e);
-                if (flag == 3) {
+                if (flag == 3 && e.getButton() == MouseEvent.BUTTON1) {
                     img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
                     polygon.addPoint(new Point(e.getX(), e.getY()));
                     System.out.println("New point added [" + e.getX() + ";" + e.getY() + "]");
@@ -193,7 +213,7 @@ public class Canvas {
                     case 3 -> {
                         img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
                         if (polygon.getPoints().size() > 1) {
-                            polygonDrawer.drawPolygon(img, liner, polygon, 0x0000ff);
+                            polygonDrawer.drawPolygon(img, liner, polygon, Globals.BLUE);
                             liner.drawLine(img, polygon.getPoints().get(0).getX(), polygon.getPoints().get(0).getY(), e.getX(), e.getY(), Globals.GREEN);
                             liner.drawLine(img, polygon.getPoints().get(polygon.getPoints().size() - 1).getX(), polygon.getPoints().get(polygon.getPoints().size() - 1).getY(), e.getX(), e.getY(), Globals.GREEN);
                             if (polygon.getPoints().size() > 2)
