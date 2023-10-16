@@ -31,6 +31,8 @@ public class Canvas {
     private final Polygon polygon = new Polygon();
     private final PolygonDrawer polygonDrawer = new PolygonDrawer();
     private String polygonMode = "";
+    private boolean polygonRemovePointFlag = true;
+    Point closest = null;
 
     private boolean shiftDown = false;
 
@@ -133,6 +135,13 @@ public class Canvas {
                         }
                     }
                     case KeyEvent.VK_SHIFT -> shiftDown = true;
+                    case KeyEvent.VK_R -> {
+                        if (flag == 3) {
+                            if (polygonRemovePointFlag) System.out.println("Swapped to edit mode");
+                            else System.out.println("Swapped to delete mode");
+                            polygonRemovePointFlag = !polygonRemovePointFlag;
+                        }
+                    }
                     case KeyEvent.VK_C -> {
                         System.out.println("Clearing image...");
                         img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
@@ -179,7 +188,6 @@ public class Canvas {
                     }
                     case 3 -> {
                         if (e.getButton() == MouseEvent.BUTTON3) {
-                            Point closest = null;
                             double closestDistance = Double.MAX_VALUE;
 
                             // Loop across all points and find the closest one to e.getX() and e.getY()
@@ -191,10 +199,29 @@ public class Canvas {
                                 }
                             }
                             // Remove the closest point and redraw the polygon
-                            polygon.getPoints().remove(closest);
-                            img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
-                            polygonDrawer.drawPolygon(img, liner, polygon, Globals.BLUE);
-                            panel.repaint();
+                            if (polygonRemovePointFlag && polygon.getPoints().size() > 1) {
+                                polygon.getPoints().remove(closest);
+                                img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
+                                polygonDrawer.drawPolygon(img, liner, polygon, Globals.BLUE);
+                                System.out.println("Removed Point located at [" + closest.getX() + ";" + closest.getY() + "]");
+                                panel.repaint();
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                super.mousePressed(e);
+                if (flag == 3 && e.getButton() == MouseEvent.BUTTON3) {
+                    double closestDistance = Double.MAX_VALUE;
+
+                    for (Point point : polygon.getPoints()) {
+                        double distance = Math.sqrt(Math.pow(point.getX() - e.getX(), 2) + Math.pow(point.getY() - e.getY(), 2)); // Euclidean distance formula
+                        if (distance < closestDistance) {
+                            closestDistance = distance;
+                            closest = point;
                         }
                     }
                 }
@@ -212,6 +239,13 @@ public class Canvas {
                         polygonDrawer.drawPolygon(img, liner, polygon, Globals.BLUE);
                         panel.repaint();
                     }
+                } else if (flag == 3 && e.getButton() == MouseEvent.BUTTON3 && !polygonRemovePointFlag) {
+                    closest.setX(e.getX());
+                    closest.setY(e.getY());
+                    System.out.println("Updated coordinates of point to [" + e.getX() + ";" + e.getY() + "]");
+                    img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
+                    polygonDrawer.drawPolygon(img, liner, polygon, Globals.BLUE);
+                    panel.repaint();
                 }
             }
         });
@@ -243,13 +277,22 @@ public class Canvas {
                     }
                     case 3 -> {
                         img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
-                        if (polygon.getPoints().size() > 1) {
-                            polygonDrawer.drawPolygon(img, liner, polygon, Globals.BLUE);
+                        polygonDrawer.drawPolygon(img, liner, polygon, Globals.BLUE);
+                        if (polygon.getPoints().size() > 1 && polygonRemovePointFlag && SwingUtilities.isLeftMouseButton(e)) {
                             // Draw lines from first and last point to create interactive feeling
                             liner.drawLine(img, polygon.getPoints().get(0).getX(), polygon.getPoints().get(0).getY(), e.getX(), e.getY(), Globals.GREEN);
                             liner.drawLine(img, polygon.getPoints().get(polygon.getPoints().size() - 1).getX(), polygon.getPoints().get(polygon.getPoints().size() - 1).getY(), e.getX(), e.getY(), Globals.GREEN);
                             if (polygon.getPoints().size() > 2)
                                 // If the array size is larger than 2, paint in red the line that will be deleted
+                                liner.drawLine(img, polygon.getPoints().get(0).getX(), polygon.getPoints().get(0).getY(), polygon.getPoints().get(polygon.getPoints().size() - 1).getX(), polygon.getPoints().get(polygon.getPoints().size() - 1).getY(), Globals.RED);
+                        } else if (!polygonRemovePointFlag && SwingUtilities.isRightMouseButton(e)) {
+                            if (closest != null) {
+                                liner.drawLine(img, closest.getX(), closest.getY(), e.getX(), e.getY(), Globals.GREEN);
+                            }
+                        } else if (!polygonRemovePointFlag && SwingUtilities.isLeftMouseButton(e)) {
+                            liner.drawLine(img, polygon.getPoints().get(0).getX(), polygon.getPoints().get(0).getY(), e.getX(), e.getY(), Globals.GREEN);
+                            liner.drawLine(img, polygon.getPoints().get(polygon.getPoints().size() - 1).getX(), polygon.getPoints().get(polygon.getPoints().size() - 1).getY(), e.getX(), e.getY(), Globals.GREEN);
+                            if (polygon.getPoints().size() > 2)
                                 liner.drawLine(img, polygon.getPoints().get(0).getX(), polygon.getPoints().get(0).getY(), polygon.getPoints().get(polygon.getPoints().size() - 1).getX(), polygon.getPoints().get(polygon.getPoints().size() - 1).getY(), Globals.RED);
                         }
                         panel.repaint();

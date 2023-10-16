@@ -13,7 +13,8 @@ public class Polygon {
 
     private final List<Point> points = new ArrayList<>();
 
-    public Polygon() {}
+    public Polygon() {
+    }
 
     public void addPoint(Point point) {
         this.points.add(point);
