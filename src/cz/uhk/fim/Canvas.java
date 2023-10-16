@@ -32,7 +32,7 @@ public class Canvas {
     private final PolygonDrawer polygonDrawer = new PolygonDrawer();
     private String polygonMode = "";
     private boolean polygonRemovePointFlag = true;
-    Point closest = null;
+    private Point closest = null;
 
     private boolean shiftDown = false;
 
