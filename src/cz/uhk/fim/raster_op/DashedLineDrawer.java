@@ -5,7 +5,7 @@ import cz.uhk.fim.raster_data.Raster;
 
 /**
  * This class represents a dashed line that uses Naive Line algorithm to draw a line with added spacing between pixels to create feeling of dashed line being drawn
- * The lines are being drawn until certain set limit is reached, in default 5, 5. Meaning the dash will be drawn for 5 pixels then there will be 5 pixel delay.
+ * The lines are being drawn until certain set limit is reached, in default 1, 1. Meaning the dash will be drawn for 1 pixel then there will be 1 pixel delay.
  * i.e. - represents dash, * represents space -> with limit 5, 5 -> -----*****-----*****-----*****-----
  */
 public class DashedLineDrawer implements Liner {
