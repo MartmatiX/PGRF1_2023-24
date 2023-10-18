@@ -59,28 +59,7 @@ public class Canvas {
             }
         };
         panel.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 15));
-
-        JTextArea textArea = new JTextArea();
-        textArea.setForeground(new Color(255, 255, 255));
-        textArea.setFocusable(false);
-        textArea.setEditable(false);
-        textArea.setBackground(Color.BLACK);
-        String text = """
-                Welcome to the Application!
-                Please select mode:
-                            
-                1 - Naive line drawer
-                2 - Dashed line drawer
-                    'S' key to change the spacing and length of each dash.
-                    Follow instruction in the terminal.
-                3 - Polygon drawer
-                    Before using, please, select mode in the terminal.
-                    RMB to delete point
-                        Press 'R' to swap between remove and edit mode
-                """;
-        textArea.setText(text);
-        panel.add(textArea, BorderLayout.WEST);
-
+        panel.add(initTextArea(), BorderLayout.WEST);
         panel.setPreferredSize(new Dimension(width, height));
 
         frame.add(panel, BorderLayout.CENTER);
@@ -302,6 +281,30 @@ public class Canvas {
 
         });
         panel.requestFocus();
+    }
+
+    public JTextArea initTextArea() {
+        JTextArea textArea = new JTextArea();
+        textArea.setForeground(new Color(255, 255, 255));
+        textArea.setFocusable(false);
+        textArea.setEditable(false);
+        textArea.setBackground(Color.BLACK);
+        String text = """
+                Welcome to the Application!
+                Please select mode:
+                            
+                1 - Naive line drawer
+                2 - Dashed line drawer
+                    'S' key to change the spacing and length of each dash.
+                    Follow instruction in the terminal.
+                3 - Polygon drawer
+                    Before using, please, select mode in the terminal.
+                    RMB to delete point
+                        Press 'R' to swap between remove and edit mode
+                ESC - Exit
+                """;
+        textArea.setText(text);
+        return textArea;
     }
 
     private void prepareLineStart(int x, int y, int color) {
