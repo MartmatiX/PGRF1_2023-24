@@ -258,21 +258,13 @@ public class Canvas {
                         img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
                         polygonDrawer.drawPolygon(img, liner, polygon, Globals.BLUE);
                         if (polygon.getPoints().size() > 1 && polygonRemovePointFlag && SwingUtilities.isLeftMouseButton(e)) {
-                            // Draw lines from first and last point to create interactive feeling
-                            liner.drawLine(img, polygon.getPoints().get(0).getX(), polygon.getPoints().get(0).getY(), e.getX(), e.getY(), Globals.GREEN);
-                            liner.drawLine(img, polygon.getPoints().get(polygon.getPoints().size() - 1).getX(), polygon.getPoints().get(polygon.getPoints().size() - 1).getY(), e.getX(), e.getY(), Globals.GREEN);
-                            if (polygon.getPoints().size() > 2)
-                                // If the array size is larger than 2, paint in red the line that will be deleted
-                                liner.drawLine(img, polygon.getPoints().get(0).getX(), polygon.getPoints().get(0).getY(), polygon.getPoints().get(polygon.getPoints().size() - 1).getX(), polygon.getPoints().get(polygon.getPoints().size() - 1).getY(), Globals.RED);
+                            drawLeadingLines(e);
                         } else if (!polygonRemovePointFlag && SwingUtilities.isRightMouseButton(e)) {
                             if (closest != null) {
                                 liner.drawLine(img, closest.getX(), closest.getY(), e.getX(), e.getY(), Globals.GREEN);
                             }
                         } else if (!polygonRemovePointFlag && SwingUtilities.isLeftMouseButton(e)) {
-                            liner.drawLine(img, polygon.getPoints().get(0).getX(), polygon.getPoints().get(0).getY(), e.getX(), e.getY(), Globals.GREEN);
-                            liner.drawLine(img, polygon.getPoints().get(polygon.getPoints().size() - 1).getX(), polygon.getPoints().get(polygon.getPoints().size() - 1).getY(), e.getX(), e.getY(), Globals.GREEN);
-                            if (polygon.getPoints().size() > 2)
-                                liner.drawLine(img, polygon.getPoints().get(0).getX(), polygon.getPoints().get(0).getY(), polygon.getPoints().get(polygon.getPoints().size() - 1).getX(), polygon.getPoints().get(polygon.getPoints().size() - 1).getY(), Globals.RED);
+                            drawLeadingLines(e);
                         }
                         panel.repaint();
                     }
@@ -281,6 +273,15 @@ public class Canvas {
 
         });
         panel.requestFocus();
+    }
+
+    public void drawLeadingLines(MouseEvent e) {
+        // Draw lines from first and last point to create interactive feeling
+        liner.drawLine(img, polygon.getPoints().get(0).getX(), polygon.getPoints().get(0).getY(), e.getX(), e.getY(), Globals.GREEN);
+        liner.drawLine(img, polygon.getPoints().get(polygon.getPoints().size() - 1).getX(), polygon.getPoints().get(polygon.getPoints().size() - 1).getY(), e.getX(), e.getY(), Globals.GREEN);
+        if (polygon.getPoints().size() > 2)
+            // If the array size is larger than 2, paint in red the line that will be deleted
+            liner.drawLine(img, polygon.getPoints().get(0).getX(), polygon.getPoints().get(0).getY(), polygon.getPoints().get(polygon.getPoints().size() - 1).getX(), polygon.getPoints().get(polygon.getPoints().size() - 1).getY(), Globals.RED);
     }
 
     public JTextArea initTextArea() {
