@@ -1,5 +1,8 @@
 package cz.uhk.fim.object_data;
 
+/**
+ * Represents a line in a 2D space
+ */
 public class Line {
 
     private final Point p1;

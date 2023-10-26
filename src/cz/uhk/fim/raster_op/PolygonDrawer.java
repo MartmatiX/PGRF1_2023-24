@@ -13,10 +13,11 @@ public class PolygonDrawer {
 
     /**
      * This method takes all points of a polygon and draws lines from the first point to the last one
-     * @param img - buffered image to which the polygon should be drawn onto
-     * @param liner - Liner class that should be used to draw the polygon
+     *
+     * @param img     - buffered image to which the polygon should be drawn onto
+     * @param liner   - Liner class that should be used to draw the polygon
      * @param polygon - polygon that will be drawn onto the image
-     * @param color - color of the polygon
+     * @param color   - color of the polygon
      */
     public void drawPolygon(Raster img, Liner liner, Polygon polygon, int color) {
         List<Point> points = polygon.getPoints();

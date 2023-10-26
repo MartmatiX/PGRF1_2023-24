@@ -8,6 +8,8 @@ import cz.uhk.fim.raster_op.DashedLineDrawer;
 import cz.uhk.fim.raster_op.Liner;
 import cz.uhk.fim.raster_op.NaiveLineDrawer;
 import cz.uhk.fim.raster_op.PolygonDrawer;
+import cz.uhk.fim.raster_op.fill_op.SeedFill;
+import cz.uhk.fim.raster_op.fill_op.SeedFill4;
 
 import javax.swing.*;
 import java.awt.*;
@@ -35,6 +37,10 @@ public class Canvas {
     private Point closest = null;
 
     private boolean shiftDown = false;
+
+    SeedFill seedFill = new SeedFill4();
+    private int fillColor = Globals.CYAN;
+    private boolean controlDown = false;
 
     private final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
 
@@ -79,14 +85,14 @@ public class Canvas {
                         img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
                         System.out.println("Changed mode to Naive Line drawer");
                         liner = new NaiveLineDrawer();
-                        lineColor = 0xff00ff;
+                        lineColor = Globals.PURPLE;
                         flag = 1;
                     }
                     case KeyEvent.VK_2 -> {
                         img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
                         System.out.println("Changed mode to Dashed Line drawer");
                         liner = new DashedLineDrawer();
-                        lineColor = 0x00ffff;
+                        lineColor = Globals.CYAN;
                         flag = 2;
                     }
                     case KeyEvent.VK_3 -> {
@@ -113,7 +119,12 @@ public class Canvas {
                             System.out.println("Exception [" + exception + "]");
                         }
                     }
+                    case KeyEvent.VK_4 -> {
+                        System.out.println("Changed to SeedFill4 mode");
+                        flag = 4;
+                    }
                     case KeyEvent.VK_SHIFT -> shiftDown = true;
+                    case KeyEvent.VK_CONTROL -> controlDown = true;
                     case KeyEvent.VK_R -> {
                         if (flag == 3) {
                             if (polygonRemovePointFlag) System.out.println("Swapped to edit mode");
@@ -143,13 +154,56 @@ public class Canvas {
                         System.out.println("Stack trace [" + exception + "]");
                     }
                 }
+                if (flag == 3 && e.getKeyCode() == KeyEvent.VK_S) {
+                    try {
+                        System.out.println("Select different Seed (Flood) Fill color");
+                        System.out.println("""
+                                1 - Red
+                                2 - Green
+                                3 - Blue
+                                4 - Cyan
+                                5 - Purple
+                                6 - Pattern
+                                """);
+                        switch (Integer.parseInt(bufferedReader.readLine())) {
+                            case 1 -> {
+                                fillColor = Globals.RED;
+                                Globals.usePattern = false;
+                            }
+                            case 2 -> {
+                                fillColor = Globals.GREEN;
+                                Globals.usePattern = false;
+                            }
+                            case 3 -> {
+                                fillColor = Globals.BLUE;
+                                Globals.usePattern = false;
+                            }
+                            case 4 -> {
+                                fillColor = Globals.CYAN;
+                                Globals.usePattern = false;
+                            }
+                            case 5 -> {
+                                fillColor = Globals.PURPLE;
+                                Globals.usePattern = false;
+                            }
+                            case 6 -> Globals.usePattern = !Globals.usePattern;
+                        }
+                    } catch (Exception exception) {
+                        fillColor = Globals.CYAN;
+                        System.out.println("Exception occurred. Setting color back to default (Cyan)!");
+                        System.out.println("Stack trace [" + exception + "]");
+                    }
+                }
                 panel.repaint();
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
                 super.keyReleased(e);
-                if (e.getKeyCode() == KeyEvent.VK_SHIFT) shiftDown = false;
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_SHIFT -> shiftDown = false;
+                    case KeyEvent.VK_CONTROL -> controlDown = false;
+                }
             }
         });
 
@@ -209,7 +263,7 @@ public class Canvas {
             @Override
             public void mouseReleased(MouseEvent e) {
                 super.mouseReleased(e);
-                if (flag == 3 && e.getButton() == MouseEvent.BUTTON1) {
+                if (flag == 3 && e.getButton() == MouseEvent.BUTTON1 && !controlDown) {
                     // Add point only when mouse is released, so we can draw lines via mouseDragged
                     img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
                     polygon.addPoint(new Point(e.getX(), e.getY()));
@@ -218,12 +272,15 @@ public class Canvas {
                         polygonDrawer.drawPolygon(img, liner, polygon, Globals.BLUE);
                         panel.repaint();
                     }
-                } else if (flag == 3 && e.getButton() == MouseEvent.BUTTON3 && !polygonRemovePointFlag) {
+                } else if (flag == 3 && e.getButton() == MouseEvent.BUTTON3 && !polygonRemovePointFlag && !controlDown) {
                     closest.setX(e.getX());
                     closest.setY(e.getY());
                     System.out.println("Updated coordinates of point to [" + e.getX() + ";" + e.getY() + "]");
                     img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
                     polygonDrawer.drawPolygon(img, liner, polygon, Globals.BLUE);
+                    panel.repaint();
+                } else if (flag == 3 && e.getButton() == MouseEvent.BUTTON1 && controlDown && Integer.parseInt(polygonMode) == 1) {
+                    seedFill.fill(img, e.getX(), e.getY(), fillColor, color -> color == Globals.DEFAULT_BACKGROUND_COLOR);
                     panel.repaint();
                 }
             }
@@ -302,6 +359,8 @@ public class Canvas {
                     Before using, please, select mode in the terminal.
                     RMB to delete point
                         Press 'R' to swap between remove and edit mode
+                    CTRL to seed fill the polygon (you have to use naive line mode, not dashed line mode)
+                    'S' key to change the color of the Seed (Flood) Fill algorithm
                 ESC - Exit
                 """;
         textArea.setText(text);
