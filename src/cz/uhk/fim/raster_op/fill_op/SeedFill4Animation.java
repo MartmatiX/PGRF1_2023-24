@@ -9,12 +9,11 @@ import java.util.function.Predicate;
 
 /**
  * This class represents a Seed (Flood) Fill algorithm that shows how the polygon is being filled.
- * This solution is memory and computing heavy so please, keep the polygons at reasonable sizes.
- * The pattern is disabled for this option since accessing static variables on multiple threads caused a deadlock.
  */
 public class SeedFill4Animation implements SeedFill {
 
     private final JPanel panel;
+    Timer timer = new Timer();
 
     public SeedFill4Animation(JPanel panel) {
         this.panel = panel;
@@ -22,11 +21,10 @@ public class SeedFill4Animation implements SeedFill {
 
     @Override
     public void fill(Raster img, int x, int y, int fillColor, Predicate<Integer> isInArea) {
-        fill(img, x, y, fillColor, isInArea, 1);
+        fill(img, x, y, fillColor, isInArea, 3);
     }
 
-    private void fill(Raster img, int x, int y, int fillColor, Predicate<Integer> isInArea, int delay) {
-        Timer timer = new Timer();
+    private void fill(Raster img, int x, int y, int fillColor, Predicate<Integer> isInArea, long delay) {
 
         timer.schedule(new TimerTask() {
             @Override

@@ -4,10 +4,8 @@ import cz.uhk.fim.constants.Globals;
 import cz.uhk.fim.object_data.Point;
 import cz.uhk.fim.raster_data.Polygon;
 import cz.uhk.fim.raster_data.RasterBufferedImage;
-import cz.uhk.fim.raster_op.DashedLineDrawer;
-import cz.uhk.fim.raster_op.Liner;
-import cz.uhk.fim.raster_op.NaiveLineDrawer;
-import cz.uhk.fim.raster_op.PolygonDrawer;
+import cz.uhk.fim.raster_data.Rectangle;
+import cz.uhk.fim.raster_op.*;
 import cz.uhk.fim.raster_op.fill_op.SeedFill;
 import cz.uhk.fim.raster_op.fill_op.SeedFill4;
 import cz.uhk.fim.raster_op.fill_op.SeedFill4Animation;
@@ -43,6 +41,9 @@ public class Canvas {
     private SeedFill seedFill = new SeedFill4();
     private int fillColor = Globals.CYAN;
     private boolean controlDown = false;
+
+    private final Rectangle rectangle = new Rectangle();
+    private final RectangleDrawer rectangleDrawer = new RectangleDrawer();
 
     private final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
 
@@ -122,8 +123,10 @@ public class Canvas {
                         }
                     }
                     case KeyEvent.VK_4 -> {
-                        System.out.println("Changed to SeedFill4 mode");
+                        img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
                         flag = 4;
+                        rectangle.getPoints().clear();
+                        System.out.println("Changed to Rectangle drawer");
                     }
                     case KeyEvent.VK_SHIFT -> shiftDown = true;
                     case KeyEvent.VK_CONTROL -> controlDown = true;
@@ -156,7 +159,7 @@ public class Canvas {
                         System.out.println("Stack trace [" + exception + "]");
                     }
                 }
-                if (flag == 3 && e.getKeyCode() == KeyEvent.VK_S) {
+                if ((flag == 3 || flag == 4) && e.getKeyCode() == KeyEvent.VK_S) {
                     try {
                         System.out.println("Select different Seed (Flood) Fill color");
                         System.out.println("""
@@ -205,12 +208,7 @@ public class Canvas {
                     seedFill = new SeedFill4();
                 }
                 if (flag == 3 && e.getKeyCode() == KeyEvent.VK_M) {
-                    System.out.println("""
-                            Switched to Animation fill.
-                            This method is memory and computing heavy, keep the polygons at reasonable sizes.
-                            The fill is going to continue even if you add a new point to the polygon, so unless you have really strong PC, do not add new points during the animation.
-                            Multiple starting points are possible, but again, keep it in spec with your computing power.
-                            """);
+                    System.out.println("Switched to Animation fill");
                     seedFill = new SeedFill4Animation(panel);
                 }
                 panel.repaint();
@@ -260,6 +258,15 @@ public class Canvas {
                             }
                         }
                     }
+                    case 4 -> {
+                        if (e.getButton() == MouseEvent.BUTTON1 && rectangle.getPoints().size() < 2) {
+                            prepareLineStart(e.getX(), e.getY(), Globals.PURPLE);
+                            rectangle.addPoint(new Point(e.getX(), e.getY()));
+                        }
+                        if (rectangle.getPoints().size() == 2) {
+                            rectangleDrawer.drawRectangle(img, liner, rectangle, Globals.PURPLE);
+                        }
+                    }
                 }
             }
 
@@ -299,6 +306,9 @@ public class Canvas {
                     polygonDrawer.drawPolygon(img, liner, polygon, Globals.BLUE);
                     panel.repaint();
                 } else if (flag == 3 && e.getButton() == MouseEvent.BUTTON1 && controlDown && Integer.parseInt(polygonMode) == 1) {
+                    seedFill.fill(img, e.getX(), e.getY(), fillColor, color -> color == Globals.DEFAULT_BACKGROUND_COLOR);
+                    panel.repaint();
+                } else if (flag == 4 && rectangle.getPoints().size() == 2 && controlDown) {
                     seedFill.fill(img, e.getX(), e.getY(), fillColor, color -> color == Globals.DEFAULT_BACKGROUND_COLOR);
                     panel.repaint();
                 }
@@ -384,6 +394,9 @@ public class Canvas {
                     'K' key to change to Stack implementation
                         'L' key to change back to Java stack
                     'M' key to change to animation mode
+                4 - Rectangle drawer
+                    CTRL to seed fill the rectangle
+                    'S' key to change the color of the Seed (Flood) Fill algorithm
                 C - clear canvas
                 ESC - Exit
                 """;
@@ -395,7 +408,7 @@ public class Canvas {
     private void prepareLineStart(int x, int y, int color) {
         img.setColor(x, y, color);
         panel.repaint();
-        System.out.println("Selected new starting point [" + lineX + ";" + lineY + "]");
+        System.out.println("Selected new starting point [" + x + ";" + y + "]");
     }
 
     public void draw() {
@@ -408,7 +421,7 @@ public class Canvas {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new Canvas(1280, 720).start());
+        SwingUtilities.invokeLater(() -> new Canvas(1600, 900).start());
     }
 
 }
