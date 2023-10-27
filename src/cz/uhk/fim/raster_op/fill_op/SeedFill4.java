@@ -13,7 +13,7 @@ import java.util.function.Predicate;
  */
 public class SeedFill4 implements SeedFill {
 
-    int index = 0;
+    private int index = 0;
 
     @Override
     public void fill(Raster img, int x, int y, int fillColor, Predicate<Integer> isInArea) {

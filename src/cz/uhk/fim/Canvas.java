@@ -10,6 +10,8 @@ import cz.uhk.fim.raster_op.NaiveLineDrawer;
 import cz.uhk.fim.raster_op.PolygonDrawer;
 import cz.uhk.fim.raster_op.fill_op.SeedFill;
 import cz.uhk.fim.raster_op.fill_op.SeedFill4;
+import cz.uhk.fim.raster_op.fill_op.SeedFill4Animation;
+import cz.uhk.fim.raster_op.fill_op.SeedFill4Stack;
 
 import javax.swing.*;
 import java.awt.*;
@@ -38,7 +40,7 @@ public class Canvas {
 
     private boolean shiftDown = false;
 
-    SeedFill seedFill = new SeedFill4();
+    private SeedFill seedFill = new SeedFill4();
     private int fillColor = Globals.CYAN;
     private boolean controlDown = false;
 
@@ -194,6 +196,23 @@ public class Canvas {
                         System.out.println("Stack trace [" + exception + "]");
                     }
                 }
+                if (flag == 3 && e.getKeyCode() == KeyEvent.VK_K) {
+                    System.out.println("Switched to LIFO implementation");
+                    seedFill = new SeedFill4Stack();
+                }
+                if (flag == 3 && e.getKeyCode() == KeyEvent.VK_L) {
+                    System.out.println("Switched to Java stack");
+                    seedFill = new SeedFill4();
+                }
+                if (flag == 3 && e.getKeyCode() == KeyEvent.VK_M) {
+                    System.out.println("""
+                            Switched to Animation fill.
+                            This method is memory and computing heavy, keep the polygons at reasonable sizes.
+                            The fill is going to continue even if you add a new point to the polygon, so unless you have really strong PC, do not add new points during the animation.
+                            Multiple starting points are possible, but again, keep it in spec with your computing power.
+                            """);
+                    seedFill = new SeedFill4Animation(panel);
+                }
                 panel.repaint();
             }
 
@@ -313,7 +332,8 @@ public class Canvas {
                     }
                     case 3 -> {
                         img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
-                        polygonDrawer.drawPolygon(img, liner, polygon, Globals.BLUE);
+                        if (polygon.getPoints().size() > 1)
+                            polygonDrawer.drawPolygon(img, liner, polygon, Globals.BLUE);
                         if (polygon.getPoints().size() > 1 && polygonRemovePointFlag && SwingUtilities.isLeftMouseButton(e)) {
                             drawLeadingLines(e);
                         } else if (!polygonRemovePointFlag && SwingUtilities.isRightMouseButton(e)) {
@@ -359,10 +379,15 @@ public class Canvas {
                     Before using, please, select mode in the terminal.
                     RMB to delete point
                         Press 'R' to swap between remove and edit mode
-                    CTRL to seed fill the polygon (you have to use naive line mode, not dashed line mode)
+                    CTRL to seed fill the polygon (you have to use naive line mode)
                     'S' key to change the color of the Seed (Flood) Fill algorithm
+                    'K' key to change to Stack implementation
+                        'L' key to change back to Java stack
+                    'M' key to change to animation mode
+                C - clear canvas
                 ESC - Exit
                 """;
+        System.out.println(text);
         textArea.setText(text);
         return textArea;
     }
