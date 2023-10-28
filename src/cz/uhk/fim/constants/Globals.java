@@ -21,6 +21,8 @@ public class Globals {
     public static boolean usePattern = false;
     public static List<Integer> colors = List.of(CYAN, BLUE, PURPLE);
 
+    public static boolean ellipseLeads = true;
+
     public static int spaceLength = 1;
     public static int dashLength = 1;
 

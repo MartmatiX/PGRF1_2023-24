@@ -215,8 +215,12 @@ public class Canvas {
                 }
                 if (flag == 4 && e.getKeyCode() == KeyEvent.VK_E && rectangle.getPoints().size() == 2) {
                     System.out.println("Drawing an Ellipse");
+                    img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
+                    drawer = new RectangleDrawer();
+                    drawer.drawPolygon(img, liner, rectangle, Globals.PURPLE);
                     drawer = new EllipseDrawer();
                     drawer.drawPolygon(img, liner, rectangle, Globals.PURPLE);
+                    Globals.ellipseLeads = !Globals.ellipseLeads;
                     panel.repaint();
                 }
                 panel.repaint();
@@ -405,6 +409,7 @@ public class Canvas {
                     CTRL to seed fill the rectangle
                     'S' key to change the color of the Seed (Flood) Fill algorithm
                     'E' key to draw the Ellipse
+                        'E' key again to disable leading lines
                 C - clear canvas
                 ESC - Exit
                 """;

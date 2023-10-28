@@ -1,5 +1,6 @@
 package cz.uhk.fim.raster_op;
 
+import cz.uhk.fim.constants.Globals;
 import cz.uhk.fim.object_data.Point;
 import cz.uhk.fim.raster_data.Polygon;
 import cz.uhk.fim.raster_data.Raster;
@@ -24,10 +25,12 @@ public class EllipseDrawer implements Drawer {
         Point left = new Point(center.getX() - width / 2, center.getY());
         Point right = new Point(center.getX() + width / 2, center.getY());
 
-        liner.drawLine(img, center, top, color);
-        liner.drawLine(img, center, bottom, color);
-        liner.drawLine(img, center, left, color);
-        liner.drawLine(img, center, right, color);
+        if (Globals.ellipseLeads) {
+            liner.drawLine(img, center, top, color);
+            liner.drawLine(img, center, bottom, color);
+            liner.drawLine(img, center, left, color);
+            liner.drawLine(img, center, right, color);
+        }
 
         int numSegments = 360000;
 
