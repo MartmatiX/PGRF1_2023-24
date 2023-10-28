@@ -409,7 +409,7 @@ public class Canvas {
                     CTRL to seed fill the rectangle
                     'S' key to change the color of the Seed (Flood) Fill algorithm
                     'E' key to draw the Ellipse
-                        'E' key again to disable leading lines
+                        'E' key again to disable/enable leading lines
                 C - clear canvas
                 ESC - Exit
                 """;
