@@ -1,6 +1,5 @@
 package cz.uhk.fim.raster_op;
 
-import cz.uhk.fim.object_data.Line;
 import cz.uhk.fim.object_data.Point;
 import cz.uhk.fim.raster_data.Raster;
 
@@ -26,7 +25,8 @@ public interface Liner {
         drawLine(img, p1.getX(), p1.getY(), p2.getX(), p2.getY(), color);
     }
 
-    default void drawLine(Raster img, Line line, int color) {
-        drawLine(img, line.getP1().getX(), line.getP1().getY(), line.getP2().getX(), line.getP2().getY(), color);
+    default void drawPixel(Raster img, Point point, int color) {
+        img.setColor((int) point.getX(), (int) point.getY(), color);
     }
+
 }

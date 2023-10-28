@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Class representing a drawer used to draw polygon onto image
  */
-public class PolygonDrawer {
+public class PolygonDrawer implements Drawer{
 
     /**
      * This method takes all points of a polygon and draws lines from the first point to the last one
@@ -19,6 +19,7 @@ public class PolygonDrawer {
      * @param polygon - polygon that will be drawn onto the image
      * @param color   - color of the polygon
      */
+    @Override
     public void drawPolygon(Raster img, Liner liner, Polygon polygon, int color) {
         List<Point> points = polygon.getPoints();
         for (int i = 1; i < points.size(); i++) {

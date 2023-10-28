@@ -19,7 +19,7 @@ public class Globals {
     public static final int PURPLE = 0xff00ff;
 
     public static boolean usePattern = false;
-    public static List<Integer> colors = List.of(CYAN, BLUE);
+    public static List<Integer> colors = List.of(CYAN, BLUE, PURPLE);
 
     public static int spaceLength = 1;
     public static int dashLength = 1;

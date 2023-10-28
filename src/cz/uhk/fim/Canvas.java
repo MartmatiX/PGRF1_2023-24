@@ -30,8 +30,9 @@ public class Canvas {
 
     private int flag;
 
+    private Drawer drawer;
+
     private final Polygon polygon = new Polygon();
-    private final PolygonDrawer polygonDrawer = new PolygonDrawer();
     private String polygonMode = "";
     private boolean polygonRemovePointFlag = true;
     private Point closest = null;
@@ -43,7 +44,6 @@ public class Canvas {
     private boolean controlDown = false;
 
     private final Rectangle rectangle = new Rectangle();
-    private final RectangleDrawer rectangleDrawer = new RectangleDrawer();
 
     private final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
 
@@ -100,6 +100,7 @@ public class Canvas {
                     }
                     case KeyEvent.VK_3 -> {
                         img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
+                        drawer = new PolygonDrawer();
                         flag = 3;
                         polygon.getPoints().clear();
                         System.out.println("Changed mode to Polygon drawer");
@@ -124,6 +125,7 @@ public class Canvas {
                     }
                     case KeyEvent.VK_4 -> {
                         img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
+                        drawer = new RectangleDrawer();
                         flag = 4;
                         rectangle.getPoints().clear();
                         System.out.println("Changed to Rectangle drawer");
@@ -211,6 +213,12 @@ public class Canvas {
                     System.out.println("Switched to Animation fill");
                     seedFill = new SeedFill4Animation(panel);
                 }
+                if (flag == 4 && e.getKeyCode() == KeyEvent.VK_E && rectangle.getPoints().size() == 2) {
+                    System.out.println("Drawing an Ellipse");
+                    drawer = new EllipseDrawer();
+                    drawer.drawPolygon(img, liner, rectangle, Globals.PURPLE);
+                    panel.repaint();
+                }
                 panel.repaint();
             }
 
@@ -252,7 +260,7 @@ public class Canvas {
                             if (polygonRemovePointFlag && polygon.getPoints().size() > 1) {
                                 polygon.getPoints().remove(closest);
                                 img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
-                                polygonDrawer.drawPolygon(img, liner, polygon, Globals.BLUE);
+                                drawer.drawPolygon(img, liner, polygon, Globals.BLUE);
                                 System.out.println("Removed Point located at [" + closest.getX() + ";" + closest.getY() + "]");
                                 panel.repaint();
                             }
@@ -264,7 +272,7 @@ public class Canvas {
                             rectangle.addPoint(new Point(e.getX(), e.getY()));
                         }
                         if (rectangle.getPoints().size() == 2) {
-                            rectangleDrawer.drawRectangle(img, liner, rectangle, Globals.PURPLE);
+                            drawer.drawPolygon(img, liner, rectangle, Globals.PURPLE);
                         }
                     }
                 }
@@ -295,7 +303,7 @@ public class Canvas {
                     polygon.addPoint(new Point(e.getX(), e.getY()));
                     System.out.println("New point added [" + e.getX() + ";" + e.getY() + "]");
                     if (polygon.getPoints().size() > 1) {
-                        polygonDrawer.drawPolygon(img, liner, polygon, Globals.BLUE);
+                        drawer.drawPolygon(img, liner, polygon, Globals.BLUE);
                         panel.repaint();
                     }
                 } else if (flag == 3 && e.getButton() == MouseEvent.BUTTON3 && !polygonRemovePointFlag && !controlDown) {
@@ -303,7 +311,7 @@ public class Canvas {
                     closest.setY(e.getY());
                     System.out.println("Updated coordinates of point to [" + e.getX() + ";" + e.getY() + "]");
                     img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
-                    polygonDrawer.drawPolygon(img, liner, polygon, Globals.BLUE);
+                    drawer.drawPolygon(img, liner, polygon, Globals.BLUE);
                     panel.repaint();
                 } else if (flag == 3 && e.getButton() == MouseEvent.BUTTON1 && controlDown && Integer.parseInt(polygonMode) == 1) {
                     seedFill.fill(img, e.getX(), e.getY(), fillColor, color -> color == Globals.DEFAULT_BACKGROUND_COLOR);
@@ -342,8 +350,7 @@ public class Canvas {
                     }
                     case 3 -> {
                         img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
-                        if (polygon.getPoints().size() > 1)
-                            polygonDrawer.drawPolygon(img, liner, polygon, Globals.BLUE);
+                        if (polygon.getPoints().size() > 1) drawer.drawPolygon(img, liner, polygon, Globals.BLUE);
                         if (polygon.getPoints().size() > 1 && polygonRemovePointFlag && SwingUtilities.isLeftMouseButton(e)) {
                             drawLeadingLines(e);
                         } else if (!polygonRemovePointFlag && SwingUtilities.isRightMouseButton(e)) {
@@ -397,6 +404,7 @@ public class Canvas {
                 4 - Rectangle drawer
                     CTRL to seed fill the rectangle
                     'S' key to change the color of the Seed (Flood) Fill algorithm
+                    'E' key to draw the Ellipse
                 C - clear canvas
                 ESC - Exit
                 """;
