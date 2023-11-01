@@ -1,6 +1,6 @@
 package cz.uhk.fim;
 
-import cz.uhk.fim.constants.Globals;
+import cz.uhk.fim.utilities.Globals;
 import cz.uhk.fim.object_data.Point;
 import cz.uhk.fim.raster_data.Polygon;
 import cz.uhk.fim.raster_data.RasterBufferedImage;

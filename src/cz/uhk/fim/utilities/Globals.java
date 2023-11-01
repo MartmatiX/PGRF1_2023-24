@@ -1,12 +1,8 @@
-package cz.uhk.fim.constants;
+package cz.uhk.fim.utilities;
 
 import java.util.List;
 
 public class Globals {
-
-    /**
-     * All constants used across the application
-     */
 
     // Default background color of the Buffered Image
     public static final int DEFAULT_BACKGROUND_COLOR = 0xff000000;
