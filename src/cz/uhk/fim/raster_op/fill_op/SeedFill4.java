@@ -13,17 +13,14 @@ import java.util.function.Predicate;
  */
 public class SeedFill4 implements SeedFill {
 
-    private int index = 0;
-
     @Override
     public void fill(Raster img, int x, int y, int fillColor, Predicate<Integer> isInArea) {
         img.getColor(x, y).ifPresentOrElse(color -> {
             if (isInArea.test(color) && x < img.getWidth() && checkCoordinates(img, x, y)) {
                 if (Globals.usePattern) {
-                    img.setColor(x, y, Globals.colors.get(index));
-                    index++;
-                    if (index > Globals.colors.size() - 1)
-                        index = 0;
+                    int colorSelector = x % 16;
+                    if (colorSelector == 0) img.setColor(x, y, Globals.RED);
+                    else img.setColor(x, y, Globals.CYAN);
                 } else {
                     img.setColor(x, y, fillColor);
                 }

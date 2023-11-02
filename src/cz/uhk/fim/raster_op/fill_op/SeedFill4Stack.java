@@ -15,8 +15,6 @@ import java.util.function.Predicate;
  */
 public class SeedFill4Stack implements SeedFill {
 
-    private int index = 0;
-
     @Override
     public void fill(Raster img, int x, int y, int fillColor, Predicate<Integer> isInArea) {
         // Push a new Point to the top of the stack
@@ -32,9 +30,9 @@ public class SeedFill4Stack implements SeedFill {
             img.getColor(currX, currY).ifPresentOrElse(color -> {
                 if (isInArea.test(color) && currX < img.getWidth() && checkCoordinates(img, currX, currY)) {
                     if (Globals.usePattern) {
-                        img.setColor(currX, currY, Globals.colors.get(index));
-                        index++;
-                        if (index > Globals.colors.size() - 1) index = 0;
+                        int colorSelector = currX % 16;
+                        if (colorSelector == 0) img.setColor(currX, currY, Globals.RED);
+                        else img.setColor(currX, currY, Globals.CYAN);
                     } else {
                         img.setColor(currX, currY, fillColor);
                     }

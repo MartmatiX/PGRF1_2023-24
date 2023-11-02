@@ -1,7 +1,5 @@
 package cz.uhk.fim.utilities;
 
-import java.util.List;
-
 public class Globals {
 
     // Default background color of the Buffered Image
@@ -15,7 +13,6 @@ public class Globals {
     public static final int PURPLE = 0xff00ff;
 
     public static boolean usePattern = false;
-    public static List<Integer> colors = List.of(CYAN, BLUE, PURPLE);
 
     public static boolean ellipseLeads = true;
 

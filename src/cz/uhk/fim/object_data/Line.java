@@ -13,14 +13,6 @@ public class Line {
         this.p2 = p2;
     }
 
-    public Point getP1() {
-        return p1;
-    }
-
-    public Point getP2() {
-        return p2;
-    }
-
     public boolean isHorizontal() {
         return p1.getY() == p2.getY();
     }

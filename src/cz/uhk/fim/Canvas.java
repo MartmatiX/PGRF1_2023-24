@@ -1,15 +1,12 @@
 package cz.uhk.fim;
 
+import cz.uhk.fim.raster_op.fill_op.*;
 import cz.uhk.fim.utilities.Globals;
 import cz.uhk.fim.object_data.Point;
 import cz.uhk.fim.raster_data.Polygon;
 import cz.uhk.fim.raster_data.RasterBufferedImage;
 import cz.uhk.fim.raster_data.Rectangle;
 import cz.uhk.fim.raster_op.*;
-import cz.uhk.fim.raster_op.fill_op.SeedFill;
-import cz.uhk.fim.raster_op.fill_op.SeedFill4;
-import cz.uhk.fim.raster_op.fill_op.SeedFill4Animation;
-import cz.uhk.fim.raster_op.fill_op.SeedFill4Stack;
 
 import javax.swing.*;
 import java.awt.*;
@@ -44,6 +41,9 @@ public class Canvas {
     private boolean controlDown = false;
 
     private final Rectangle rectangle = new Rectangle();
+
+    private final ScanLine scanLine = new ScanLine();
+    private int scanLineColor = Globals.CYAN;
 
     private final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
 
@@ -163,7 +163,7 @@ public class Canvas {
                 }
                 if ((flag == 3 || flag == 4) && e.getKeyCode() == KeyEvent.VK_S) {
                     try {
-                        System.out.println("Select different Seed (Flood) Fill color");
+                        System.out.println("Select different Fill color");
                         System.out.println("""
                                 1 - Red
                                 2 - Green
@@ -175,22 +175,27 @@ public class Canvas {
                         switch (Integer.parseInt(bufferedReader.readLine())) {
                             case 1 -> {
                                 fillColor = Globals.RED;
+                                scanLineColor = Globals.RED;
                                 Globals.usePattern = false;
                             }
                             case 2 -> {
                                 fillColor = Globals.GREEN;
+                                scanLineColor = Globals.GREEN;
                                 Globals.usePattern = false;
                             }
                             case 3 -> {
                                 fillColor = Globals.BLUE;
+                                scanLineColor = Globals.BLUE;
                                 Globals.usePattern = false;
                             }
                             case 4 -> {
                                 fillColor = Globals.CYAN;
+                                scanLineColor = Globals.CYAN;
                                 Globals.usePattern = false;
                             }
                             case 5 -> {
                                 fillColor = Globals.PURPLE;
+                                scanLineColor = Globals.PURPLE;
                                 Globals.usePattern = false;
                             }
                             case 6 -> Globals.usePattern = !Globals.usePattern;
@@ -222,6 +227,9 @@ public class Canvas {
                     drawer.drawPolygon(img, liner, rectangle, Globals.PURPLE);
                     Globals.ellipseLeads = !Globals.ellipseLeads;
                     panel.repaint();
+                }
+                if (flag == 3 && e.getKeyCode() == KeyEvent.VK_F) {
+                    scanLine.fill(img, polygon, scanLineColor, drawer, liner);
                 }
                 panel.repaint();
             }
@@ -405,9 +413,9 @@ public class Canvas {
                     'K' key to change to Stack implementation
                         'L' key to change back to Java stack
                     'M' key to change to animation mode
+                    'F' key for Scan Line
                 4 - Rectangle drawer
                     CTRL to seed fill the rectangle
-                    'S' key to change the color of the Seed (Flood) Fill algorithm
                     'E' key to draw the Ellipse
                         'E' key again to disable/enable leading lines
                 C - clear canvas
