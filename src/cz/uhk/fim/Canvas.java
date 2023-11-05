@@ -47,6 +47,10 @@ public class Canvas {
 
     private final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
 
+    private int mouseX;
+    private int mouseY;
+    private JTextArea textArea;
+
     public Canvas(int width, int height) {
         JFrame frame = new JFrame();
 
@@ -375,8 +379,18 @@ public class Canvas {
                         panel.repaint();
                     }
                 }
+                mouseX = e.getX();
+                mouseY = e.getY();
+                updateText();
             }
 
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                super.mouseMoved(e);
+                mouseX = e.getX();
+                mouseY = e.getY();
+                updateText();
+            }
         });
         panel.requestFocus();
     }
@@ -391,11 +405,30 @@ public class Canvas {
     }
 
     public JTextArea initTextArea() {
-        JTextArea textArea = new JTextArea();
+        textArea = new JTextArea();
         textArea.setForeground(new Color(255, 255, 255));
         textArea.setFocusable(false);
         textArea.setEditable(false);
-        textArea.setBackground(Color.BLACK);
+        textArea.setOpaque(false);
+        return textArea;
+    }
+
+    private void prepareLineStart(int x, int y, int color) {
+        img.setColor(x, y, color);
+        panel.repaint();
+        System.out.println("Selected new starting point [" + x + ";" + y + "]");
+    }
+
+    public void draw() {
+        img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
+    }
+
+    public void start() {
+        draw();
+        panel.repaint();
+    }
+
+    private void updateText() {
         String text = """
                 Welcome to the Application!
                 Please select mode:
@@ -420,25 +453,10 @@ public class Canvas {
                         'E' key again to disable/enable leading lines
                 C - clear canvas
                 ESC - Exit
-                """;
-        System.out.println(text);
+                                
+                Mouse position:
+                """ + "[" + mouseX + ";" + mouseY + "]";
         textArea.setText(text);
-        return textArea;
-    }
-
-    private void prepareLineStart(int x, int y, int color) {
-        img.setColor(x, y, color);
-        panel.repaint();
-        System.out.println("Selected new starting point [" + x + ";" + y + "]");
-    }
-
-    public void draw() {
-        img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
-    }
-
-    public void start() {
-        draw();
-        panel.repaint();
     }
 
     public static void main(String[] args) {
