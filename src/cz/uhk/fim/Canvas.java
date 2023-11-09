@@ -1,5 +1,6 @@
 package cz.uhk.fim;
 
+import cz.uhk.fim.object_ops.PolygonCutter;
 import cz.uhk.fim.raster_op.fill_op.*;
 import cz.uhk.fim.utilities.Globals;
 import cz.uhk.fim.object_data.Point;
@@ -30,6 +31,9 @@ public class Canvas {
     private Drawer drawer;
 
     private final Polygon polygon = new Polygon();
+    private final Polygon croppingPolygon = new Polygon();
+    private PolygonCutter polygonCutter;
+    private boolean polygonSwitch = true;
     private String polygonMode = "";
     private boolean polygonRemovePointFlag = true;
     private Point closest = null;
@@ -235,6 +239,14 @@ public class Canvas {
                 if (flag == 3 && e.getKeyCode() == KeyEvent.VK_F) {
                     scanLine.fill(img, polygon, scanLineColor, drawer, liner);
                 }
+                if (flag == 3 && e.getKeyCode() == KeyEvent.VK_W) {
+                    polygonSwitch = !polygonSwitch;
+                }
+                if (flag == 3 && e.getKeyCode() == KeyEvent.VK_Q) {
+                    polygonCutter = new PolygonCutter(croppingPolygon);
+                    Polygon cut = polygonCutter.cut(polygon);
+                    scanLine.fill(img, cut, Globals.RED, drawer, liner);
+                }
                 panel.repaint();
             }
 
@@ -313,7 +325,7 @@ public class Canvas {
             @Override
             public void mouseReleased(MouseEvent e) {
                 super.mouseReleased(e);
-                if (flag == 3 && e.getButton() == MouseEvent.BUTTON1 && !controlDown) {
+                if (flag == 3 && e.getButton() == MouseEvent.BUTTON1 && !controlDown && polygonSwitch) {
                     // Add point only when mouse is released, so we can draw lines via mouseDragged
                     img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
                     polygon.addPoint(new Point(e.getX(), e.getY()));
@@ -335,6 +347,17 @@ public class Canvas {
                 } else if (flag == 4 && rectangle.getPoints().size() == 2 && controlDown) {
                     seedFill.fill(img, e.getX(), e.getY(), fillColor, color -> color == Globals.DEFAULT_BACKGROUND_COLOR);
                     panel.repaint();
+                }
+                if (flag == 3 && e.getButton() == MouseEvent.BUTTON1 && !controlDown && !polygonSwitch) {
+                    // Add point only when mouse is released, so we can draw lines via mouseDragged
+                    img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
+                    croppingPolygon.addPoint(new Point(e.getX(), e.getY()));
+                    System.out.println("New point added [" + e.getX() + ";" + e.getY() + "]");
+                    if (croppingPolygon.getPoints().size() > 1) {
+                        drawer.drawPolygon(img, liner, croppingPolygon, Globals.BLUE);
+                        drawer.drawPolygon(img, liner, polygon, Globals.BLUE);
+                        panel.repaint();
+                    }
                 }
             }
         });

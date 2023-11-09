@@ -17,6 +17,10 @@ public class Polygon {
     public Polygon() {
     }
 
+    public Polygon(Polygon polygon) {
+        this.points.addAll(polygon.getPoints());
+    }
+
     public void addPoint(Point point) {
         this.points.add(point);
     }
