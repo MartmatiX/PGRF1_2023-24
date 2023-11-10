@@ -111,6 +111,7 @@ public class Canvas {
                         drawer = new PolygonDrawer();
                         flag = 3;
                         polygon.getPoints().clear();
+                        croppingPolygon.getPoints().clear();
                         System.out.println("Changed mode to Polygon drawer");
                         System.out.println("Please select liner [1 - Naive liner, 2 - Dashed liner]");
                         try {
@@ -240,12 +241,38 @@ public class Canvas {
                     scanLine.fill(img, polygon, scanLineColor, drawer, liner);
                 }
                 if (flag == 3 && e.getKeyCode() == KeyEvent.VK_W) {
+                    croppingPolygon.getPoints().clear();
                     polygonSwitch = !polygonSwitch;
+                    img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
+                    if (polygon.getPoints().size() > 1) {
+                        drawer.drawPolygon(img, liner, polygon, Globals.BLUE);
+                    }
+                    if (polygonSwitch) {
+                        System.out.println("You are now drawing polygon");
+                    } else {
+                        System.out.println("You are now drawing cropping polygon");
+                    }
                 }
                 if (flag == 3 && e.getKeyCode() == KeyEvent.VK_Q) {
-                    polygonCutter = new PolygonCutter(croppingPolygon);
-                    Polygon cut = polygonCutter.cut(polygon);
-                    scanLine.fill(img, cut, Globals.RED, drawer, liner);
+                    if (polygon.getPoints().size() >= 3 && croppingPolygon.getPoints().size() >= 3) {
+                        polygonCutter = new PolygonCutter(croppingPolygon);
+                        try {
+                            Polygon cut = polygonCutter.cut(polygon);
+                            scanLine.fill(img, cut, Globals.RED, drawer, liner);
+                        } catch (Exception exception) {
+                            System.out.println("Unable to use this cropping polygon, please create a new one using 'N' key");
+                        }
+                    } else {
+                        System.out.println("Not able to use these polygons!");
+                    }
+                }
+                if (flag == 3 && e.getKeyCode() == KeyEvent.VK_N) {
+                    croppingPolygon.getPoints().clear();
+                    img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
+                    if (polygon.getPoints().size() > 1) {
+                        drawer.drawPolygon(img, liner, polygon, Globals.BLUE);
+                    }
+                    System.out.println("Clearing cropping polygon");
                 }
                 panel.repaint();
             }
@@ -354,8 +381,8 @@ public class Canvas {
                     croppingPolygon.addPoint(new Point(e.getX(), e.getY()));
                     System.out.println("New point added [" + e.getX() + ";" + e.getY() + "]");
                     if (croppingPolygon.getPoints().size() > 1) {
-                        drawer.drawPolygon(img, liner, croppingPolygon, Globals.BLUE);
-                        drawer.drawPolygon(img, liner, polygon, Globals.BLUE);
+                        drawer.drawPolygon(img, liner, croppingPolygon, Globals.GREEN);
+                        if (polygon.getPoints().size() > 1) drawer.drawPolygon(img, liner, polygon, Globals.BLUE);
                         panel.repaint();
                     }
                 }
@@ -470,6 +497,7 @@ public class Canvas {
                         'L' key to change back to Java stack
                     'M' key to change to animation mode
                     'F' key for Scan Line
+                    'W' key for cropping polygon
                 4 - Rectangle drawer
                     CTRL to seed fill the rectangle
                     'E' key to draw the Ellipse
