@@ -182,31 +182,11 @@ public class Canvas {
                                 6 - Pattern
                                 """);
                         switch (Integer.parseInt(bufferedReader.readLine())) {
-                            case 1 -> {
-                                fillColor = Globals.RED;
-                                scanLineColor = Globals.RED;
-                                Globals.usePattern = false;
-                            }
-                            case 2 -> {
-                                fillColor = Globals.GREEN;
-                                scanLineColor = Globals.GREEN;
-                                Globals.usePattern = false;
-                            }
-                            case 3 -> {
-                                fillColor = Globals.BLUE;
-                                scanLineColor = Globals.BLUE;
-                                Globals.usePattern = false;
-                            }
-                            case 4 -> {
-                                fillColor = Globals.CYAN;
-                                scanLineColor = Globals.CYAN;
-                                Globals.usePattern = false;
-                            }
-                            case 5 -> {
-                                fillColor = Globals.PURPLE;
-                                scanLineColor = Globals.PURPLE;
-                                Globals.usePattern = false;
-                            }
+                            case 1 -> updateFillColor(Globals.RED);
+                            case 2 -> updateFillColor(Globals.GREEN);
+                            case 3 -> updateFillColor(Globals.BLUE);
+                            case 4 -> updateFillColor(Globals.CYAN);
+                            case 5 -> updateFillColor(Globals.PURPLE);
                             case 6 -> Globals.usePattern = !Globals.usePattern;
                         }
                     } catch (Exception exception) {
@@ -301,24 +281,16 @@ public class Canvas {
                     }
                     case 3 -> {
                         if (e.getButton() == MouseEvent.BUTTON3) {
-                            double closestDistance = Double.MAX_VALUE;
 
                             // Loop across all points and find the closest one to e.getX() and e.getY()
-                            for (Point point : polygon.getPoints()) {
-                                double distance = Math.sqrt(Math.pow(point.getX() - e.getX(), 2) + Math.pow(point.getY() - e.getY(), 2)); // Euclidean distance formula
-                                if (distance < closestDistance) {
-                                    closestDistance = distance;
-                                    closest = point;
-                                }
-                            }
+                            if (polygonSwitch) calculateClosestForPolygon(polygon, e);
+                            else calculateClosestForPolygon(croppingPolygon, e);
                             // Remove the closest point and redraw the polygon
-                            if (polygonRemovePointFlag && polygon.getPoints().size() > 1) {
-                                polygon.getPoints().remove(closest);
-                                img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
-                                drawer.drawPolygon(img, liner, polygon, Globals.BLUE);
-                                System.out.println("Removed Point located at [" + closest.getX() + ";" + closest.getY() + "]");
-                                panel.repaint();
+                            if (polygonRemovePointFlag && polygon.getPoints().size() > 1 && polygonSwitch) {
+                                removeAndRepaintPolygon(polygon);
                             }
+                            if (polygonRemovePointFlag && croppingPolygon.getPoints().size() > 1 && !polygonSwitch)
+                                removeAndRepaintPolygon(croppingPolygon);
                         }
                     }
                     case 4 -> {
@@ -362,12 +334,12 @@ public class Canvas {
                         panel.repaint();
                     }
                 } else if (flag == 3 && e.getButton() == MouseEvent.BUTTON3 && !polygonRemovePointFlag && !controlDown) {
+                    recalculateClosestForCurrentPolygon(e);
                     closest.setX(e.getX());
                     closest.setY(e.getY());
                     System.out.println("Updated coordinates of point to [" + e.getX() + ";" + e.getY() + "]");
                     img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
-                    drawer.drawPolygon(img, liner, polygon, Globals.BLUE);
-                    panel.repaint();
+                    checkPolygonSizeAndDraw();
                 } else if (flag == 3 && e.getButton() == MouseEvent.BUTTON1 && controlDown && Integer.parseInt(polygonMode) == 1) {
                     seedFill.fill(img, e.getX(), e.getY(), fillColor, color -> color == Globals.DEFAULT_BACKGROUND_COLOR);
                     panel.repaint();
@@ -416,15 +388,18 @@ public class Canvas {
                     }
                     case 3 -> {
                         img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
-                        if (polygon.getPoints().size() > 1) drawer.drawPolygon(img, liner, polygon, Globals.BLUE);
+                        checkPolygonSizeAndDraw();
                         if (polygon.getPoints().size() > 1 && polygonRemovePointFlag && SwingUtilities.isLeftMouseButton(e)) {
-                            drawLeadingLines(e);
+                            if (polygonSwitch) drawLeadingLines(e, polygon);
+                            else drawLeadingLines(e, croppingPolygon);
                         } else if (!polygonRemovePointFlag && SwingUtilities.isRightMouseButton(e)) {
+                            recalculateClosestForCurrentPolygon(e);
                             if (closest != null) {
                                 liner.drawLine(img, closest.getX(), closest.getY(), e.getX(), e.getY(), Globals.GREEN);
                             }
                         } else if (!polygonRemovePointFlag && SwingUtilities.isLeftMouseButton(e)) {
-                            drawLeadingLines(e);
+                            if (polygonSwitch) drawLeadingLines(e, polygon);
+                            else drawLeadingLines(e, croppingPolygon);
                         }
                         panel.repaint();
                     }
@@ -445,7 +420,43 @@ public class Canvas {
         panel.requestFocus();
     }
 
-    public void drawLeadingLines(MouseEvent e) {
+    private void recalculateClosestForCurrentPolygon(MouseEvent e) {
+        if (polygonSwitch) {
+            calculateClosestForPolygon(polygon, e);
+        } else {
+            calculateClosestForPolygon(croppingPolygon, e);
+        }
+    }
+
+    private void calculateClosestForPolygon(Polygon polygon, MouseEvent e) {
+        double closestDistance = Double.MAX_VALUE;
+        for (Point point : polygon.getPoints()) {
+            double distance = Math.sqrt(Math.pow(point.getX() - e.getX(), 2) + Math.pow(point.getY() - e.getY(), 2)); // Euclidean distance formula
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closest = point;
+            }
+        }
+    }
+
+    private void removeAndRepaintPolygon(Polygon polygon) {
+        polygon.getPoints().remove(closest);
+        img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
+        checkPolygonSizeAndDraw();
+        System.out.println("Removed Point located at [" + closest.getX() + ";" + closest.getY() + "]");
+    }
+
+    private void checkPolygonSizeAndDraw() {
+        if (polygon.getPoints().size() > 1) {
+            drawer.drawPolygon(img, liner, polygon, Globals.BLUE);
+        }
+        if (croppingPolygon.getPoints().size() > 1) {
+            drawer.drawPolygon(img, liner, croppingPolygon, Globals.GREEN);
+        }
+        panel.repaint();
+    }
+
+    private void drawLeadingLines(MouseEvent e, Polygon polygon) {
         // Draw lines from first and last point to create interactive feeling
         liner.drawLine(img, polygon.getPoints().get(0).getX(), polygon.getPoints().get(0).getY(), e.getX(), e.getY(), Globals.GREEN);
         liner.drawLine(img, polygon.getPoints().get(polygon.getPoints().size() - 1).getX(), polygon.getPoints().get(polygon.getPoints().size() - 1).getY(), e.getX(), e.getY(), Globals.GREEN);
@@ -454,7 +465,7 @@ public class Canvas {
             liner.drawLine(img, polygon.getPoints().get(0).getX(), polygon.getPoints().get(0).getY(), polygon.getPoints().get(polygon.getPoints().size() - 1).getX(), polygon.getPoints().get(polygon.getPoints().size() - 1).getY(), Globals.RED);
     }
 
-    public JTextArea initTextArea() {
+    private JTextArea initTextArea() {
         textArea = new JTextArea();
         textArea.setForeground(new Color(255, 255, 255));
         textArea.setFocusable(false);
@@ -469,11 +480,17 @@ public class Canvas {
         System.out.println("Selected new starting point [" + x + ";" + y + "]");
     }
 
-    public void draw() {
+    private void updateFillColor(int color) {
+        fillColor = color;
+        scanLineColor = color;
+        Globals.usePattern = false;
+    }
+
+    private void draw() {
         img.clear(Globals.DEFAULT_BACKGROUND_COLOR);
     }
 
-    public void start() {
+    private void start() {
         draw();
         panel.repaint();
     }
