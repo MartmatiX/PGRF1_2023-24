@@ -353,7 +353,7 @@ public class Canvas {
                     croppingPolygon.addPoint(new Point(e.getX(), e.getY()));
                     System.out.println("New point added [" + e.getX() + ";" + e.getY() + "]");
                     if (croppingPolygon.getPoints().size() > 1) {
-                        drawer.drawPolygon(img, liner, croppingPolygon, Globals.GREEN);
+                        drawer.drawPolygon(img, liner, croppingPolygon, Globals.CYAN);
                         if (polygon.getPoints().size() > 1) drawer.drawPolygon(img, liner, polygon, Globals.BLUE);
                         panel.repaint();
                     }
@@ -391,7 +391,7 @@ public class Canvas {
                         checkPolygonSizeAndDraw();
                         if (polygon.getPoints().size() > 1 && polygonRemovePointFlag && SwingUtilities.isLeftMouseButton(e)) {
                             if (polygonSwitch) drawLeadingLines(e, polygon);
-                            else drawLeadingLines(e, croppingPolygon);
+                            else if (croppingPolygon.getPoints().size() > 1) drawLeadingLines(e, croppingPolygon);
                         } else if (!polygonRemovePointFlag && SwingUtilities.isRightMouseButton(e)) {
                             recalculateClosestForCurrentPolygon(e);
                             if (closest != null) {
@@ -451,7 +451,7 @@ public class Canvas {
             drawer.drawPolygon(img, liner, polygon, Globals.BLUE);
         }
         if (croppingPolygon.getPoints().size() > 1) {
-            drawer.drawPolygon(img, liner, croppingPolygon, Globals.GREEN);
+            drawer.drawPolygon(img, liner, croppingPolygon, Globals.CYAN);
         }
         panel.repaint();
     }
