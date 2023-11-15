@@ -487,6 +487,7 @@ public class Canvas {
                         4 - Cyan
                         5 - Purple
                         6 - Pattern
+                        7 - Own Color
                         """);
                 switch (Integer.parseInt(bufferedReader.readLine())) {
                     case 1 -> updateFillColor(Globals.RED);
@@ -495,6 +496,21 @@ public class Canvas {
                     case 4 -> updateFillColor(Globals.CYAN);
                     case 5 -> updateFillColor(Globals.PURPLE);
                     case 6 -> Globals.usePattern = !Globals.usePattern;
+                    case 7 -> {
+                        System.out.println("Enter color in format 0xRRGGBB");
+                        String input = bufferedReader.readLine();
+                        try {
+                            if (input.startsWith("0x")) {
+                                input = input.substring(2);
+                            }
+                            int color = Integer.parseInt(input, 16);
+                            updateFillColor(color);
+                        } catch (Exception exception) {
+                            fillColor = Globals.CYAN;
+                            System.out.println("Exception occurred. Setting color back to default (Cyan)!");
+                            System.out.println("Stack trace [" + exception + "]");
+                        }
+                    }
                 }
             } catch (Exception exception) {
                 fillColor = Globals.CYAN;
