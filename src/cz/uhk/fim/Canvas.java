@@ -17,7 +17,6 @@ import java.io.InputStreamReader;
 import java.io.Serial;
 
 public class Canvas {
-    private final JFrame frame;
 
     private final JPanel panel;
     private final RasterBufferedImage img;
@@ -63,7 +62,7 @@ public class Canvas {
     private JTextField lengthInput;
 
     public Canvas(int width, int height) {
-        frame = new JFrame();
+        JFrame frame = new JFrame();
 
         frame.setLayout(new BorderLayout());
         frame.setTitle("UHK FIM PGRF : " + this.getClass().getName());
@@ -682,32 +681,6 @@ public class Canvas {
         JLabel statusHeaderLabel = new JLabel("Status:");
         statusLabel = new JLabel("Welcome!");
 
-        naiveButton.setFocusable(false);
-        dashedButton.setFocusable(false);
-        polygonButton.setFocusable(false);
-        rectangleButton.setFocusable(false);
-        selectorsLabel.setFocusable(false);
-        widthLabel.setFocusable(false);
-        lengthLabel.setFocusable(false);
-        spaceLengthSaveButton.setFocusable(false);
-        valuesLabel.setFocusable(false);
-        editDeleteLabel.setFocusable(false);
-        switchPolygonModeButton.setFocusable(false);
-        seedFillChangeButton.setFocusable(false);
-        stackImplementationButton.setFocusable(false);
-        seedFillAnimationButton.setFocusable(false);
-        scanLineButton.setFocusable(false);
-        croppingPolygonButton.setFocusable(false);
-        fillCroppedAreaButton.setFocusable(false);
-        createNewCropperButton.setFocusable(false);
-        rectangleControlLabel.setFocusable(false);
-        drawEllipseButton.setFocusable(false);
-        generalLabel.setFocusable(false);
-        clearCanvasButton.setFocusable(false);
-        exitButton.setFocusable(false);
-        statusHeaderLabel.setFocusable(false);
-        statusLabel.setFocusable(false);
-
         // Set panel size
         guiPanel.setPreferredSize(new Dimension(375, 900));
         guiPanel.setLayout(null);
@@ -823,8 +796,6 @@ public class Canvas {
                     System.out.println("Exception occurred. Setting values to default!");
                     System.out.println("Stack trace [" + e + "]");
                 }
-                frame.setFocusable(true);
-                frame.requestFocus();
             }
             case 6 -> swapEditAndDeleteMode();
             case 7 -> initChangeColorSequence();
@@ -841,6 +812,7 @@ public class Canvas {
                 exitApplication();
             }
         }
+        panel.requestFocusInWindow();
         panel.repaint();
     }
 
