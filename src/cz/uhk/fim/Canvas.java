@@ -670,7 +670,7 @@ public class Canvas {
         JButton stackImplementationButton = new JButton("Stack Implementation of Seed FIll");
         JButton seedFillAnimationButton = new JButton("Animation mode of Seed FIll");
         JButton scanLineButton = new JButton("Scan Line");
-        JButton croppingPolygonButton = new JButton("Draw Cropping Polygon");
+        JButton croppingPolygonButton = new JButton("Swap active polygon");
         JButton fillCroppedAreaButton = new JButton("Fill the Cropped area");
         JButton createNewCropperButton = new JButton("Create new Cropping Polygon");
         JLabel rectangleControlLabel = new JLabel("Rectangle Controls");
