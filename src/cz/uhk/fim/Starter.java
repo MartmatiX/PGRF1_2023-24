@@ -1,8 +1,5 @@
 package cz.uhk.fim;
 
-import cz.uhk.fim.first_second_task.Canvas;
-import cz.uhk.fim.third_task.Space;
-
 import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
