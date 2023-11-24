@@ -54,4 +54,8 @@ public class RasterBufferedImage implements Raster, Presentable {
     public Graphics getGraphics() {
         return img.getGraphics();
     }
+
+    public BufferedImage getImg() {
+        return img;
+    }
 }
