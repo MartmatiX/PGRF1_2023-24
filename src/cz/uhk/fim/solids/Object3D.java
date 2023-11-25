@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class Solid {
+public abstract class Object3D {
 
     protected List<Point3D> vb = new ArrayList<>();
     protected List<Integer> ib = new ArrayList<>();
@@ -16,22 +16,12 @@ public abstract class Solid {
     protected Mat4 transMat = new Mat4Identity();
     protected boolean transferable = true;
 
-    private Mat4 model = new Mat4Identity();
-
     public List<Point3D> getVb() {
         return vb;
     }
 
     public List<Integer> getIb() {
         return ib;
-    }
-
-    public Mat4 getModel() {
-        return model;
-    }
-
-    public void setModel(Mat4 model) {
-        this.model = model;
     }
 
     protected void addIndices(Integer... indices) {
@@ -55,6 +45,10 @@ public abstract class Solid {
 
     public Mat4 getTransMat() {
         return transMat;
+    }
+
+    public void setTransMat(Mat4 transMat) {
+        this.transMat = transMat;
     }
 
     public boolean isTransferable() {

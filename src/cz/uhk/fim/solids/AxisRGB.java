@@ -2,7 +2,7 @@ package cz.uhk.fim.solids;
 
 import cz.uhk.fim.transforms.Point3D;
 
-public class AxisRGB extends Solid {
+public class AxisRGB extends Object3D {
 
     public AxisRGB() {
         transferable = false;

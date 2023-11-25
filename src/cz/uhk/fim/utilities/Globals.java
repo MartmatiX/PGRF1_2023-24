@@ -11,6 +11,7 @@ public class Globals {
     public static final int BLUE = 0x0000ff;
     public static final int CYAN = 0x00ffff;
     public static final int PURPLE = 0xff00ff;
+    public static final int YELLOW = 0xffff00;
 
     public static boolean usePattern = false;
 

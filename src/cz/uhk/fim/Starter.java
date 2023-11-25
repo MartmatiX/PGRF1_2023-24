@@ -28,7 +28,7 @@ public class Starter {
             }
             case "2" -> {
                 System.out.println("Starting Third task");
-                SwingUtilities.invokeLater(() -> new Space(width, height));
+                SwingUtilities.invokeLater(() -> new Space(width, height).start());
             }
             default -> {
                 System.out.println("Your input does not match the selection, starting First and Second task");
