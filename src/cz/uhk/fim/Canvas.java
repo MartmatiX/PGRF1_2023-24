@@ -65,7 +65,7 @@ public class Canvas {
         JFrame frame = new JFrame();
 
         frame.setLayout(new BorderLayout());
-        frame.setTitle("UHK FIM PGRF : " + this.getClass().getName());
+        frame.setTitle("PGRF1 Malir - task 1 and 2");
         frame.setResizable(false);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 

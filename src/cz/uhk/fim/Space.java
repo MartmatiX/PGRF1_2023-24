@@ -62,7 +62,7 @@ public class Space {
         JFrame frame = new JFrame();
 
         frame.setLayout(new BorderLayout());
-        frame.setTitle("PGRF1 Malir");
+        frame.setTitle("PGRF1 Malir - task 3");
         frame.setResizable(false);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
@@ -225,7 +225,7 @@ public class Space {
             updateStatusMessage("You can move the object");
         }
     }
-    
+
     private String writeControls() {
         return """
                 Movement: WASD QE
