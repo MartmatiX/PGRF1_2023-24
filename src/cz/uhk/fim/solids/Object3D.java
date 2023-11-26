@@ -16,6 +16,8 @@ public abstract class Object3D {
     protected Mat4 transMat = new Mat4Identity();
     protected boolean transferable = true;
 
+    private String name = "";
+
     public List<Point3D> getVb() {
         return vb;
     }
@@ -53,6 +55,14 @@ public abstract class Object3D {
 
     public boolean isTransferable() {
         return transferable;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
 }

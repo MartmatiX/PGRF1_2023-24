@@ -6,6 +6,7 @@ import cz.uhk.fim.utilities.Globals;
 public class HexagonalPrism extends Object3D {
 
     public HexagonalPrism() {
+        this.setName("Hexagonal Prism");
 
         vb.add(new Point3D(0, 0, 3));
         vb.add(new Point3D(1.5, -2.6, 1.5));

@@ -52,6 +52,8 @@ public class Space {
     Camera camera = new Camera(new Vec3D(-39, -1, 5), 0, 0, 1, true);
     private final double CAMERA_SPEED = 1;
 
+    private JLabel statusMessageLabel;
+
     public Space(int width, int height) {
         object3DS.addAll(List.of(axisRGB, c1, p1, o1, hg1, s1, ferguson, coons, bezier, movingPrism));
 
@@ -96,25 +98,31 @@ public class Space {
                     case KeyEvent.VK_Q -> camera = camera.backward(CAMERA_SPEED);
                     case KeyEvent.VK_E -> camera = camera.forward(CAMERA_SPEED);
                     case KeyEvent.VK_ESCAPE -> exit();
-                    case KeyEvent.VK_1 -> flag = 1;
-                    case KeyEvent.VK_2 -> flag = 2;
-                    case KeyEvent.VK_H -> spinFlag = !spinFlag;
-                    case KeyEvent.VK_R -> currentSolidIndex = 1;
-                    case KeyEvent.VK_T -> currentSolidIndex = 2;
-                    case KeyEvent.VK_Y -> currentSolidIndex = 3;
-                    case KeyEvent.VK_U -> currentSolidIndex = 4;
-                    case KeyEvent.VK_I -> currentSolidIndex = 5;
-                    case KeyEvent.VK_O -> currentSolidIndex = 6;
-                    case KeyEvent.VK_P -> currentSolidIndex = 7;
-                    case KeyEvent.VK_L -> currentSolidIndex = 8;
+                    case KeyEvent.VK_1 -> changeCurrentFlag(1);
+                    case KeyEvent.VK_2 -> changeCurrentFlag(2);
+                    case KeyEvent.VK_H -> switchMoveOrSpin();
+                    case KeyEvent.VK_R -> changeCurrentSolid(1);
+                    case KeyEvent.VK_T -> changeCurrentSolid(2);
+                    case KeyEvent.VK_Y -> changeCurrentSolid(3);
+                    case KeyEvent.VK_U -> changeCurrentSolid(4);
+                    case KeyEvent.VK_I -> changeCurrentSolid(5);
+                    case KeyEvent.VK_O -> changeCurrentSolid(6);
+                    case KeyEvent.VK_P -> changeCurrentSolid(7);
+                    case KeyEvent.VK_L -> changeCurrentSolid(8);
                     case KeyEvent.VK_NUMPAD8 -> moveObject(1, currentSolidIndex);
                     case KeyEvent.VK_NUMPAD6 -> moveObject(2, currentSolidIndex);
                     case KeyEvent.VK_NUMPAD2 -> moveObject(3, currentSolidIndex);
                     case KeyEvent.VK_NUMPAD4 -> moveObject(4, currentSolidIndex);
                     case KeyEvent.VK_NUMPAD9 -> moveObject(9, currentSolidIndex);
                     case KeyEvent.VK_NUMPAD7 -> moveObject(7, currentSolidIndex);
-                    case KeyEvent.VK_F -> setCameraView(new Mat4PerspRH(Math.PI / 4, 1, 0.01, 100));
-                    case KeyEvent.VK_G -> setCameraView(new Mat4OrthoRH(20, 20, 0.1, 200));
+                    case KeyEvent.VK_F -> {
+                        setCameraView(new Mat4PerspRH(Math.PI / 4, 1, 0.01, 100));
+                        updateStatusMessage("You changed to perspective camera");
+                    }
+                    case KeyEvent.VK_G -> {
+                        setCameraView(new Mat4OrthoRH(20, 20, 0.1, 200));
+                        updateStatusMessage("You changed to rectangular camera");
+                    }
                 }
                 object3DS.add(axisRGB);
             }
@@ -181,8 +189,43 @@ public class Space {
 
     }
 
-    // TODO: 25.11.2023 finish status change messages -> create separate methods and methods to display message
+    private void updateStatusMessage(String message) {
+        this.statusMessageLabel.setForeground(Color.GREEN);
+        this.statusMessageLabel.setText(message);
+        System.out.println(message);
+    }
 
+    private void changeCurrentSolid(int index) {
+        currentSolidIndex = index;
+        Object3D object3D = object3DS.get(index);
+        if (index <= 5) updateStatusMessage("You selected: " + object3D.getName());
+        else {
+            switch (index) {
+                case 6 -> updateStatusMessage("You selected: " + object3D.getName() + " Ferguson");
+                case 7 -> updateStatusMessage("You selected: " + object3D.getName() + " Bezier");
+                case 8 -> updateStatusMessage("You selected: " + object3D.getName() + " Coons");
+            }
+        }
+    }
+
+    private void changeCurrentFlag(int index) {
+        this.flag = index;
+        if (index == 1) {
+            updateStatusMessage("You switched to camera movement");
+        } else {
+            updateStatusMessage("You switched to rotation");
+        }
+    }
+
+    private void switchMoveOrSpin() {
+        this.spinFlag = !this.spinFlag;
+        if (spinFlag) {
+            updateStatusMessage("You can rotate the object");
+        } else {
+            updateStatusMessage("You can move the object");
+        }
+    }
+    
     private String writeControls() {
         return """
                 Movement: WASD QE
@@ -191,9 +234,9 @@ public class Space {
                 Zoom: MouseWheel
 
                 Solids:
-                Octahedron: R
+                Cube: R
                 Prism: T
-                Cube: Y
+                Octahedron: Y
                 Hexagonal Prism: U
                 Sphere: I
                 Ferguson: O
@@ -320,7 +363,7 @@ public class Space {
         JLabel generalLabel = new JLabel("General");
         JButton exitButton = new JButton("Exit");
         JLabel statusLabel = new JLabel("Status:");
-        JLabel statusMessageLabel = new JLabel("Welcome!");
+        statusMessageLabel = new JLabel("Welcome!");
 
         guiPanel.setPreferredSize(new Dimension(375, 900));
         guiPanel.setLayout(null);
@@ -406,32 +449,38 @@ public class Space {
         generalLabel.setBounds(25, 770, 100, 25);
         exitButton.setBounds(25, 790, 325, 35);
         statusLabel.setBounds(25, 835, 100, 25);
-        statusMessageLabel.setBounds(25, 860, 100, 25);
+        statusMessageLabel.setBounds(25, 860, 300, 25);
 
         return guiPanel;
     }
 
     private void handleButtons(int index) {
         switch (index) {
-            case 1 -> currentSolidIndex = 1;
-            case 2 -> currentSolidIndex = 2;
-            case 3 -> currentSolidIndex = 3;
-            case 4 -> currentSolidIndex = 5;
-            case 5 -> currentSolidIndex = 4;
-            case 6 -> currentSolidIndex = 6;
-            case 7 -> currentSolidIndex = 7;
-            case 8 -> currentSolidIndex = 8;
-            case 9 -> flag = 1;
-            case 10 -> flag = 2;
+            case 1 -> changeCurrentSolid(1);
+            case 2 -> changeCurrentSolid(2);
+            case 3 -> changeCurrentSolid(3);
+            case 4 -> changeCurrentSolid(5);
+            case 5 -> changeCurrentSolid(4);
+            case 6 -> changeCurrentSolid(6);
+            case 7 -> changeCurrentSolid(7);
+            case 8 -> changeCurrentSolid(8);
+            case 9 -> changeCurrentFlag(1);
+            case 10 -> changeCurrentFlag(2);
             case 11 -> moveObject(1, currentSolidIndex);
             case 12 -> moveObject(3, currentSolidIndex);
             case 13 -> moveObject(4, currentSolidIndex);
             case 14 -> moveObject(2, currentSolidIndex);
             case 15 -> moveObject(7, currentSolidIndex);
             case 16 -> moveObject(9, currentSolidIndex);
-            case 17 -> spinFlag = !spinFlag;
-            case 18 -> setCameraView(new Mat4PerspRH(Math.PI / 4, 1, 0.01, 100));
-            case 19 -> setCameraView(new Mat4OrthoRH(20, 20, 0.1, 200));
+            case 17 -> switchMoveOrSpin();
+            case 18 -> {
+                setCameraView(new Mat4PerspRH(Math.PI / 4, 1, 0.01, 100));
+                updateStatusMessage("You changed to perspective camera");
+            }
+            case 19 -> {
+                setCameraView(new Mat4OrthoRH(20, 20, 0.1, 200));
+                updateStatusMessage("You changed to rectangular camera");
+            }
             case 20 -> exit();
         }
         panel.requestFocusInWindow();

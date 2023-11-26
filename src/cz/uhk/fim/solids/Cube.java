@@ -6,6 +6,7 @@ import cz.uhk.fim.utilities.Globals;
 public class Cube extends Object3D {
 
     public Cube() {
+        this.setName("Cube");
 
         vb.add(new Point3D(-2, -2, -2));
         vb.add(new Point3D(-2, 2, -2));

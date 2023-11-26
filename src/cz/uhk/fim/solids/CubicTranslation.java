@@ -7,6 +7,8 @@ import cz.uhk.fim.transforms.Point3D;
 public class CubicTranslation extends Object3D {
 
     public CubicTranslation(Mat4 type, int color) {
+        this.setName("Cubic: ");
+
         Point3D[] points;
         points = new Point3D[]{new Point3D(1, 1, 0), new Point3D(1, 2, 0), new Point3D(1, 3, 2), new Point3D(1, 4, 0), new Point3D(2, 1, 0), new Point3D(2, 2, 3), new Point3D(2, 3, 0), new Point3D(2, 4, 0), new Point3D(3, 1, 4), new Point3D(3, 2, 0), new Point3D(3, 3, 0), new Point3D(3, 4, 0), new Point3D(4, 1, -5), new Point3D(4, 2, 0), new Point3D(4, 3, -7), new Point3D(4, 4, 0),};
 

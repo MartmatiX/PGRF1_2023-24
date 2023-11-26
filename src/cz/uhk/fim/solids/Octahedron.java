@@ -6,6 +6,7 @@ import cz.uhk.fim.utilities.Globals;
 public class Octahedron extends Object3D {
 
     public Octahedron() {
+        this.setName("Octahedron");
 
         vb.add(new Point3D(1, 0, 0));
         vb.add(new Point3D(-1, 0, 0));

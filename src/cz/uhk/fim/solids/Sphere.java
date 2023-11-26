@@ -9,6 +9,8 @@ public class Sphere extends Object3D {
     private static final int SLICES = 20;
 
     public Sphere() {
+        this.setName("Sphere");
+
         generateVertices();
         generateIndices();
         addColors(Globals.YELLOW);

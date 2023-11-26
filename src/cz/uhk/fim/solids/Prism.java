@@ -6,6 +6,8 @@ import cz.uhk.fim.utilities.Globals;
 public class Prism extends Object3D {
 
     public Prism() {
+        this.setName("Prism");
+
         vb.add(new Point3D(0, 0, 4));
         vb.add(new Point3D(-2, -2, -1));
         vb.add(new Point3D(-2, 2, -1));
